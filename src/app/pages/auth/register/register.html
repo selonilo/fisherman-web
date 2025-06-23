@@ -1,0 +1,53 @@
+<app-floating-configurator />
+<div
+    class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
+    <div class="flex flex-col items-center justify-center">
+        <div
+            style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+            <div class="w-full bg-surface-0 dark:bg-surface-900 py-20 px-8 sm:px-20" style="border-radius: 53px">
+                <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary"
+                    routerLink="/auth/login" style="cursor: pointer">Giriş
+                    yap</span>
+                <div class="text-center mb-8">
+                    <img src="assets/logo/logo.png" class="mx-auto" style="height: 160px;" />
+                    <span class="text-muted-color font-medium">Devam etmek için üye olun</span>
+                </div>
+
+                <form #registerForm="ngForm" novalidate>
+                    <label for="name"
+                        class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Adı</label>
+                    <input pInputText id="name" name="name" type="text" placeholder="Adı"
+                        class="w-full md:w-[30rem] mb-8" [(ngModel)]="name" required />
+
+                    <label for="surname"
+                        class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Soyadı</label>
+                    <input pInputText id="surname" name="surname" type="text" placeholder="Soyadı"
+                        class="w-full md:w-[30rem] mb-8" [(ngModel)]="surname" required />
+
+                    <label for="mail"
+                        class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
+                    <input pInputText id="mail" name="mail" type="email" placeholder="Mail adresi"
+                        class="w-full md:w-[30rem] mb-8" [(ngModel)]="mail" required email />
+
+                    <label for="password"
+                        class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Şifre</label>
+                    <p-password id="password1" name="password" [(ngModel)]="password" placeholder="Şifre"
+                        [toggleMask]="true" styleClass="w-full md:w-[30rem] mb-8" [fluid]="true" [feedback]="false"
+                        required></p-password>
+
+                    <label for="location"
+                        class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Lokasyon</label>
+                    <input pInputText id="location" name="location" type="text" placeholder="Lokasyon"
+                        class="w-full md:w-[30rem] mb-8" [(ngModel)]="location" required />
+
+                    <div class="w-full md:w-[30rem] mb-8">
+                        <p-button label="Üye ol" styleClass="w-full" [disabled]="!registerForm.valid"
+                            (onClick)="register()"></p-button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+<p-toast />

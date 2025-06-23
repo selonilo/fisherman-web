@@ -1,0 +1,99 @@
+<div class="grid grid-cols-12 gap-4">
+    <div class="col-span-5">
+        <div class="flex flex-col items-center justify-center">
+            <div
+                style="border-radius: 56px; padding: 0.3rem; background: linear-gradient(180deg, var(--primary-color) 10%, rgba(33, 150, 243, 0) 30%)">
+                <div class="w-full bg-surface-0 dark:bg-surface-900 py-5 px-8 sm:px-5" style="border-radius: 53px">
+                    <div class="text-center">
+                        <a target="_blank" rel="noopener noreferrer"
+                            class="text-primary font-bold hover:underline text-xl inline-block">
+                            {{ name }}
+                        </a>
+                    </div>
+
+                    <div class="flex justify-center items-center gap-2">
+                        <span *ngIf="firstThreeUsers.length > 0">Takipçi</span>
+                        <p-avatar-group class="mr-5">
+                            <ng-container *ngFor="let item of firstThreeUsers">
+                                <p-avatar *ngIf="item.imageUrl" [image]="filePath + item.imageUrl" size="large"
+                                    shape="circle"></p-avatar>
+                                <p-avatar *ngIf="!item.imageUrl" icon="pi pi-user" size="large"
+                                    shape="circle"></p-avatar>
+                            </ng-container>
+
+                            <p-avatar *ngIf="remainingUserCount > 0" [label]="'+' + remainingUserCount" shape="circle"
+                                size="large" />
+                        </p-avatar-group>
+
+
+                        <span *ngIf="firstThreeUsersFollower.length > 0">Takip</span>
+                        <p-avatar-group>
+                            <ng-container *ngFor="let item of firstThreeUsersFollower">
+                                <p-avatar *ngIf="item.imageUrl" [image]="filePath + item.imageUrl" size="large"
+                                    shape="circle"></p-avatar>
+                                <p-avatar *ngIf="!item.imageUrl" icon="pi pi-user" size="large"
+                                    shape="circle"></p-avatar>
+                            </ng-container>
+
+                            <p-avatar *ngIf="remainingUserCountFollower > 0" [label]="'+' + remainingUserCountFollower"
+                                shape="circle" size="large" />
+                        </p-avatar-group>
+                    </div>
+
+                    <div *ngIf="!imageUrl && isMyPage" class="col-span-full lg:col-span-6">
+                        <div class="card">
+                            <div class="font-semibold text-xl mb-4">Resim</div>
+                            <p-fileUpload #uploader name="file" [customUpload]="true" (uploadHandler)="onUpload($event)"
+                                accept="image/*" maxFileSize="1000000" chooseLabel="Dosya Seç" cancelLabel="İptal"
+                                uploadLabel="Yükle">
+                            </p-fileUpload>
+                        </div>
+                    </div>
+                    <div class="avatar-container">
+                        <p-avatar *ngIf="imageUrl" class="custom-avatar" [image]="filePath + imageUrl" size="xlarge"
+                            shape="circle"></p-avatar>
+                        <p-button *ngIf="imageUrl && isMyPage" (onClick)="onDeleteImage()" label="Resmi Sil"></p-button>
+                    </div>
+
+                    <form #registerForm="ngForm" novalidate>
+                        <label for="name"
+                            class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Adı</label>
+                        <input pInputText id="name" name="name" type="text" placeholder="Adı"
+                            class="w-full md:w-[30rem] mb-8" [(ngModel)]="name" required [disabled]="!isMyPage" />
+
+                        <label for="surname"
+                            class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Soyadı</label>
+                        <input pInputText id="surname" name="surname" type="text" placeholder="Soyadı"
+                            class="w-full md:w-[30rem] mb-8" [(ngModel)]="surname" required [disabled]="!isMyPage" />
+
+                        <label for="mail"
+                            class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Email</label>
+                        <input pInputText id="mail" name="mail" type="email" placeholder="Mail adresi"
+                            class="w-full md:w-[30rem] mb-8" [(ngModel)]="mail" required email [disabled]="!isMyPage" />
+
+                        <label for="password"
+                            class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Şifre</label>
+                        <p-password id="password" name="password" [(ngModel)]="password" placeholder="Şifre"
+                            [toggleMask]="true" styleClass="w-full md:w-[30rem] mb-8" [fluid]="true" [feedback]="false"
+                            required [disabled]="!isMyPage"></p-password>
+
+                        <label for="location"
+                            class="block text-surface-900 dark:text-surface-0 text-xl font-medium mb-2">Lokasyon</label>
+                        <input pInputText id="location" name="location" type="text" placeholder="Lokasyon"
+                            class="w-full md:w-[30rem] mb-8" [(ngModel)]="location" required [disabled]="!isMyPage" />
+
+                        <div class="w-full md:w-[30rem] mb-8">
+                            <p-button *ngIf="isMyPage" label="Güncelle" styleClass="w-full"
+                                [disabled]="!registerForm.valid" (onClick)="update()"></p-button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-span-7">
+        <app-post [isProfilePage]="true"></app-post>
+    </div>
+</div>
+<p-toast />

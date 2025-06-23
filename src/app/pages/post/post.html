@@ -1,0 +1,193 @@
+<p-toolbar *ngIf="!isProfilePage" styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="Ekle" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()" />
+    </ng-template>
+</p-toolbar>
+
+<div class="card">
+    <div class="font-semibold text-xl">Gönderiler</div>
+    <div *ngIf="loading" class="flex justify-center items-center h-[400px]">
+        <p-progressSpinner></p-progressSpinner>
+    </div>
+    <div *ngIf="!loading">
+        <p-dataview [value]="tableList" [layout]="'grid'" emptyMessage="Kayıt Bulunamadı">
+
+            <ng-template #grid let-items>
+                <div class="grid grid-cols-12 gap-4">
+                    <div *ngFor="let item of items; let i = index" class="col-span-12 sm:col-span-6 lg:col-span-4 p-2">
+                        <div
+                            class="p-6 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
+                            <span class="text-primary font-bold hover:underline">{{
+                                item.title }}</span>
+                            <div class="flex justify-center rounded p-6">
+                                <div class="relative mx-auto w-full" style="max-width: 275px; height: 275px;">
+                                    <img *ngIf="item.imageUrl" class="rounded w-full h-full object-contain"
+                                        [src]="filePath + item.imageUrl" />
+
+                                    <div *ngIf="!item.imageUrl"
+                                        class="flex items-center justify-center w-full h-full bg-gray-100 rounded">
+                                        <i class="pi pi-image text-gray-400" style="font-size: 5rem;"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="pt-12">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;">
+                                    <p-chip *ngIf="item.userImageUrl" [label]="item.name" class="chip-pointer"
+                                        [image]="filePath + item.userImageUrl" styleClass="m-0"
+                                        (click)="routeProfile(item.userId)">
+                                    </p-chip>
+
+                                    <p-chip *ngIf="!item.userImageUrl" [label]="item.name" class="chip-pointer"
+                                        icon="pi pi-user" styleClass="m-0" (click)="routeProfile(item.userId)">
+                                    </p-chip>
+
+                                    <p-button *ngIf="!item.isFollowed && userId != item.userId" icon="pi pi-user-plus"
+                                        styleClass="h-full" [outlined]="true" (onClick)="followUser(item)"
+                                        label="Takip Et">
+                                    </p-button>
+
+                                    <p-button *ngIf="item.isFollowed && userId != item.userId" icon="pi pi-user-minus"
+                                        styleClass="h-full" [outlined]="true" (onClick)="unFollowUser(item)"
+                                        label="Takipten Çıkar">
+                                    </p-button>
+                                </div>
+
+                                <div class="flex flex-row justify-between items-start gap-2 w-full flex-wrap">
+                                    <div class="min-w-0 flex-1">
+                                        <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">
+                                            {{ item.postType }}
+                                        </span>
+                                        <div class="mt-1">
+                                            <div class="text-lg font-medium break-words whitespace-pre-wrap">
+                                                {{ item.content }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-1 shrink-0" style="border-radius: 30px">
+                                        <div class="flex items-center gap-2 justify-center py-1 px-2" style="
+                                            border-radius: 30px;
+                                            box-shadow:
+                                                0px 1px 2px 0px rgba(0, 0, 0, 0.04),
+                                                0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+                                        ">
+                                            <span class="text-sm font-medium break-words whitespace-pre-wrap">{{
+                                                item.viewNumber }}</span>
+                                            <i class="pi pi-eye text-yellow-500"></i>
+                                            <span class="text-sm font-medium break-words whitespace-pre-wrap">{{
+                                                item.likeNumber }}</span>
+                                            <i class="pi pi-heart-fill text-red-500"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col gap-6 mt-6 mb-5">
+                                    <div class="flex gap-2">
+                                        <p-button *ngIf="!item.isLiked" icon="pi pi-heart" styleClass="h-full"
+                                            [outlined]="true" (onClick)="likePost(item)"></p-button>
+                                        <p-button *ngIf="item.isLiked" icon="pi pi-heart-fill" styleClass="h-full"
+                                            [outlined]="true" (onClick)="unLikePost(item)"></p-button>
+                                        <p-button *ngIf="userId === item.userId" icon="pi pi-pencil" [rounded]="true"
+                                            [outlined]="true" (click)="edit(item)"></p-button>
+                                        <p-button icon="pi pi-comment" [rounded]="true" [outlined]="true"
+                                            (click)="openCommentInput(item)"></p-button>
+                                        <p-button *ngIf="userId === item.userId" icon="pi pi-trash" severity="danger"
+                                            [rounded]="true" [outlined]="true" (click)="delete(item)" />
+                                    </div>
+                                </div>
+                                <div *ngIf="item.showCommentInput" class="mt-2 mb-2">
+                                    <label for="comment" class="block font-bold mb-3">Yorum Yaz</label>
+                                    <div class="flex items-center gap-2">
+                                        <input type="text" pInputText id="comment" [(ngModel)]="comment" required
+                                            autofocus class="flex-1" />
+                                        <p-button icon="pi pi-save" styleClass="h-full" [outlined]="true"
+                                            (onClick)="commentPost(item)"></p-button>
+                                    </div>
+                                </div>
+                                <span *ngIf="item.commentModelList.length > 0" style="cursor: pointer;"
+                                    class="text-primary font-bold hover:underline" (click)="showComment(item)">Yorumlar
+                                    {{item.commentModelList.length}}</span>
+                                <p-accordion *ngIf="item.showComment">
+                                    <p-accordion-panel *ngFor="let comment of item.commentModelList; let i = index"
+                                        [value]="i">
+                                        <p-accordion-header>
+                                            <div class="w-full flex items-center justify-between gap-2">
+                                                <div class="flex items-center gap-2">
+                                                    <p-chip *ngIf="comment.userModel.imageUrl"
+                                                        [label]="comment.userModel.name" class="chip-pointer"
+                                                        [image]="filePath + comment.userModel.imageUrl"
+                                                        styleClass="m-0">
+                                                    </p-chip>
+                                                    <p-chip *ngIf="!comment.userModel.imageUrl"
+                                                        [label]="comment.userModel.name" class="chip-pointer"
+                                                        icon="pi pi-user" styleClass="m-0">
+                                                    </p-chip>
+                                                </div>
+
+                                                <p-button *ngIf="userId == comment.userId" icon="pi pi-trash"
+                                                    styleClass="h-full mr-5" [outlined]="true" severity="danger"
+                                                    (onClick)="deleteComment(comment)">
+                                                </p-button>
+                                            </div>
+                                        </p-accordion-header>
+
+                                        <p-accordion-content>
+                                            <p class="m-0">{{ comment.createdDate | date: 'MM/dd/yyyy' }} : {{
+                                                comment.comment }}</p>
+                                        </p-accordion-content>
+                                    </p-accordion-panel>
+                                </p-accordion>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </ng-template>
+        </p-dataview>
+    </div>
+</div>
+
+<p-dialog [(visible)]="formDialog" [style]="{ width: '450px' }" header="Gönderi Detayı" [modal]="true" appendTo="body">
+    <ng-template #content>
+        <div class="flex flex-col gap-6">
+            <div *ngIf="!selectedItem.imageUrl" class="col-span-full lg:col-span-6">
+                <div class="card">
+                    <div class="font-semibold text-xl mb-4">Resim</div>
+                    <p-fileUpload #uploader name="file" (onSelect)="onUpload($event)" accept="image/*"
+                        maxFileSize="1000000" chooseLabel="Dosya Seç" cancelLabel="İptal" [showUploadButton]="false">
+                    </p-fileUpload>
+                </div>
+            </div>
+            <div class="avatar-container">
+                <p-avatar *ngIf="selectedItem.imageUrl" class="custom-avatar" [image]="filePath + selectedItem.imageUrl"
+                    size="xlarge" shape="circle"></p-avatar>
+                <p-button *ngIf="selectedItem.imageUrl" (onClick)="onDeleteImage()" label="Resmi Sil"></p-button>
+            </div>
+            <div>
+                <label for="title" class="block font-bold mb-3">Başlık</label>
+                <input type="text" pInputText id="title" [(ngModel)]="selectedItem.title" required autofocus fluid />
+                <small class="text-red-500" *ngIf="submitted && !selectedItem.title">Boş olamaz.</small>
+            </div>
+            <div>
+                <label for="content" class="block font-bold mb-3">İçerik</label>
+                <textarea id="content" rows="5" cols="30" pTextarea [(ngModel)]="selectedItem.content" required
+                    autofocus fluid></textarea>
+                <small class="text-red-500" *ngIf="submitted && !selectedItem.content">Boş olamaz.</small>
+            </div>
+            <div>
+                <label for="fishType" class="block font-bold mb-3">Balık Türü</label>
+                <p-select [(ngModel)]="selectedItem.fishType" inputId="postType" [options]="fishTypeList"
+                    placeholder="Seçiniz" appendTo="body" fluid />
+                <small class="text-red-500" *ngIf="submitted && !selectedItem.fishType">Boş olamaz.</small>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Vazgeç" icon="pi pi-times" text (click)="hideDialog()" />
+        <p-button label="Kaydet" icon="pi pi-check" (click)="save()" />
+    </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />
+<p-toast />

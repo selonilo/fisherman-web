@@ -1,0 +1,78 @@
+<div id="map" style="height: 730px;"></div>
+
+<p-dialog [(visible)]="formDialog" [style]="{ width: '1500px', height: '1000px' }" header="Mera Detayları"
+    [modal]="true">
+    <ng-template #content>
+        <div class="flex gap-4 h-full">
+            <div class="flex flex-col gap-6 w-1/3 overflow-auto">
+                <div>
+                    <label for="title" class="block font-bold mb-3">Mera Adı</label>
+                    <input type="text" pInputText id="title" [(ngModel)]="selectedLocation.name" required autofocus
+                        fluid [disabled]="checkFormDisable()" />
+                    <small class="text-red-500" *ngIf="submitted && !selectedLocation.name">Boş olamaz.</small>
+                </div>
+                <div>
+                    <label for="title" class="block font-bold mb-3">Açıklaması</label>
+                    <input type="text" pInputText id="title" [(ngModel)]="selectedLocation.description" required
+                        autofocus fluid [disabled]="checkFormDisable()" />
+                    <small class="text-red-500" *ngIf="submitted && !selectedLocation.description">Boş
+                        olamaz.</small>
+                </div>
+                <div>
+                    <label for="title" class="block font-bold mb-3">Adres</label>
+                    <input type="text" pInputText id="title" [(ngModel)]="selectedLocation.address" required fluid
+                        disabled />
+                    <small class="text-red-500" *ngIf="submitted && !selectedLocation.address">Boş olamaz.</small>
+                </div>
+                <div>
+                    <label for="title" class="block font-bold mb-3">Balık Türleri</label>
+                    <p-multiselect [options]="fishTypeList" [(ngModel)]="selectedLocation.fishTypeList"
+                        styleClass="w-full md:w-120" appendTo="body" [disabled]="checkFormDisable()" />
+                    <small class="text-red-500" *ngIf="submitted && !selectedLocation.fishTypeList">Boş
+                        olamaz.</small>
+                </div>
+                <div>
+                    <label for="title" class="block font-bold mb-3">Herkese Açık</label>
+                    <p-toggleswitch [(ngModel)]="selectedLocation.isPublic" [disabled]="checkFormDisable()" />
+                </div>
+                <p *ngIf="selectedLocation.userModel" class="m-0 text-sm"><strong>Ekleyen:</strong> {{
+                    selectedLocation.userModel?.name }} {{
+                    selectedLocation.userModel?.surname }}</p>
+
+                <div *ngIf="selectedLocation?.id" class="p-1 shrink-0" style="border-radius: 30px">
+                    <div class="flex items-center gap-2 justify-center py-1 px-2" style="
+                                            border-radius: 30px;
+                                            box-shadow:
+                                                0px 1px 2px 0px rgba(0, 0, 0, 0.04),
+                                                0px 1px 2px 0px rgba(0, 0, 0, 0.06);
+                                        ">
+                        <span class="text-sm font-medium break-words whitespace-pre-wrap">{{
+                            selectedLocation.approveCount }}</span>
+                        <i class="pi pi-eye text-yellow-500"></i>
+                        <span class="text-sm font-medium break-words whitespace-pre-wrap">{{
+                            selectedLocation.favoriteCount }}</span>
+                        <i class="pi pi-heart-fill text-red-500"></i>
+                    </div>
+                </div>
+
+                <div class="mt-auto" style="text-align: end;">
+                    <p-button *ngIf="!checkFormDisable()" label="Vazgeç" icon="pi pi-times" text
+                        (click)="hideDialog()" />
+                    <p-button *ngIf="!checkFormDisable()" [label]="selectedLocation?.id ? 'Güncelle' : 'Kaydet'"
+                        icon="pi pi-check" (click)="save()" />
+                </div>
+            </div>
+            <div class="w-2/3 h-full overflow-auto">
+                <p-card header="Gönderiler">
+                    <div *ngIf="!selectedLocation?.id" style="text-align: center; margin-top: 5rem;">İçerik oluşturmak
+                        için mera
+                        kaydediniz.</div>
+                    <app-post *ngIf="selectedLocation?.id" [locationId]="selectedLocation?.id"></app-post>
+                </p-card>
+            </div>
+        </div>
+    </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }" />
+<p-toast />
