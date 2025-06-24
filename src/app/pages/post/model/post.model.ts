@@ -24,4 +24,6 @@ export interface PostModel {
     showCommentInput: boolean;
     showComment: boolean;
     file?: File;
+    communityName: string;
+    locationName: string;
 }

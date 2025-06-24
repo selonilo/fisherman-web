@@ -19,7 +19,6 @@ import {InputIconModule} from 'primeng/inputicon';
 import {IconFieldModule} from 'primeng/iconfield';
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {PostService} from '../service/post.service';
-import {PostModel} from './model/post.model';
 import {DataViewModule} from 'primeng/dataview';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {ChipModule} from 'primeng/chip';
@@ -29,13 +28,16 @@ import {FileUploadModule} from 'primeng/fileupload';
 import {AvatarModule} from 'primeng/avatar';
 import {AuthService} from '../service/auth.service';
 import {AccordionModule} from 'primeng/accordion';
-import {CommentModel} from './model/comment.model';
 import {EnumFishType} from '../enum/enum.fish.type';
 import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import {CommentService} from '../service/comment.service';
+import {CommunityModel} from "./model/community.model";
+import {CommunityService} from "../service/community.service";
+import {ToggleSwitch} from "primeng/toggleswitch";
 import {FollowService} from "../service/follow.service";
 import {FollowModel} from "../common/model/follow.model";
 import {EnumContentType} from "../enum/enum.content.type";
+import {PostModel} from "../post/model/post.model";
 
 interface Column {
     field: string;
@@ -49,7 +51,7 @@ interface ExportColumn {
 }
 
 @Component({
-    selector: 'app-post',
+    selector: 'app-community',
     standalone: true,
     imports: [
         CommonModule,
@@ -77,25 +79,21 @@ interface ExportColumn {
         AvatarModule,
         TextareaModule,
         AccordionModule,
-        ProgressSpinnerModule
+        ProgressSpinnerModule,
+        ToggleSwitch
     ],
-    templateUrl: 'post.html',
-    providers: [MessageService, PostService, ConfirmationService],
-    styleUrls: ['post.scss']
+    templateUrl: 'community.html',
+    providers: [MessageService, Community, ConfirmationService],
+    styleUrls: ['community.scss']
 })
-export class Post implements OnInit {
+export class Community implements OnInit {
     @Input() isProfilePage: boolean = false;
     formDialog: boolean = false;
     submitted: boolean = false;
-    fishTypeList = Object.keys(EnumFishType).map((key) => ({
-        label: EnumFishType[key as keyof typeof EnumFishType],
-        value: key
-    }));
     @ViewChild('dt') dt!: Table;
-    exportColumns!: ExportColumn[];
     cols!: Column[];
-    tableList: PostModel[] = [];
-    selectedItem!: PostModel;
+    tableList: CommunityModel[] = [];
+    selectedItem!: CommunityModel;
     loading: boolean = false;
     totalRecords: number = 0;
     pageSize: number = 10;
@@ -105,17 +103,13 @@ export class Post implements OnInit {
     userId?: number;
     filePath: string = PROJECT_CONSTANTS.FILE_PATH;
     comment: string = '';
-
-    @Input() locationId?: number;
     file?: File;
 
     constructor(
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
-        private service: PostService,
+        private service: CommunityService,
         private router: Router,
-        private authService: AuthService,
-        private commentService: CommentService,
         private followService: FollowService
     ) {
     }
@@ -127,37 +121,16 @@ export class Post implements OnInit {
 
     findPostWithPagination(page: number = 0, size: number = 10) {
         this.loading = true;
-        if (this.isProfilePage) {
-            this.service.getListByUserId(Number(localStorage.getItem('userId'))).subscribe({
-                next: (data) => {
-                    this.tableList = data;
-                    this.loading = false;
-                },
-                error: (err) => {
-                    console.log(err);
-                }
-            });
-        } else if (this.locationId) {
-            this.service.getListByLocationId(this.locationId, Number(localStorage.getItem('userId'))).subscribe({
-                next: (data) => {
-                    this.tableList = data;
-                    this.loading = false;
-                },
-                error: (err) => {
-                    console.log(err);
-                }
-            });
-        } else {
-            this.service.getList(Number(localStorage.getItem('userId'))).subscribe({
-                next: (data) => {
-                    this.tableList = data;
-                    this.loading = false;
-                },
-                error: (err) => {
-                    console.log(err);
-                }
-            });
-        }
+        this.service.getList(Number(localStorage.getItem('userId'))).subscribe({
+            next: (data) => {
+                this.tableList = data;
+                this.loading = false;
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        });
+
     }
 
     onGlobalFilter(table: Table, event: Event) {
@@ -165,12 +138,12 @@ export class Post implements OnInit {
     }
 
     openNew() {
-        this.selectedItem = <PostModel>{};
+        this.selectedItem = <CommunityModel>{};
         this.submitted = false;
         this.formDialog = true;
     }
 
-    edit(selectedItem: PostModel) {
+    edit(selectedItem: CommunityModel) {
         this.selectedItem = {...selectedItem};
         this.formDialog = true;
     }
@@ -180,15 +153,15 @@ export class Post implements OnInit {
         this.submitted = false;
     }
 
-    delete(selectedItem: PostModel) {
+    delete(selectedItem: CommunityModel) {
         this.confirmationService.confirm({
-            message: selectedItem.title + ' silmek istediğinize emin misiniz' + '?',
+            message: selectedItem.name + ' silmek istediğinize emin misiniz' + '?',
             header: 'Onaylama',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
                 this.service.deleteById(selectedItem.id).subscribe({
                     next: (data) => {
-                        this.selectedItem = <PostModel>{};
+                        this.selectedItem = <CommunityModel>{};
                         this.messageService.add({
                             severity: 'success',
                             summary: 'Başarılı',
@@ -207,10 +180,10 @@ export class Post implements OnInit {
 
     save() {
         this.submitted = true;
-        if (this.selectedItem.title?.trim()) {
+        if (this.selectedItem.name?.trim()) {
             this.selectedItem.userId = Number(localStorage.getItem('userId'));
             if (this.selectedItem.id) {
-                this.service.save(this.selectedItem).subscribe({
+                this.service.update(this.selectedItem).subscribe({
                     next: (data) => {
                         this.messageService.add({
                             severity: 'success',
@@ -225,9 +198,8 @@ export class Post implements OnInit {
                     }
                 });
             } else {
-                this.selectedItem.locationId = this.locationId;
                 this.selectedItem.file = this.file;
-                this.service.savePost(this.selectedItem).subscribe({
+                this.service.save(this.selectedItem).subscribe({
                     next: (data) => {
                         this.messageService.add({
                             severity: 'success',
@@ -244,42 +216,8 @@ export class Post implements OnInit {
             }
 
             this.formDialog = false;
-            this.selectedItem = <PostModel>{};
+            this.selectedItem = <CommunityModel>{};
         }
-    }
-
-    likePost(post: PostModel) {
-        this.service.likePost(post.id, Number(localStorage.getItem('userId'))).subscribe({
-            next: (data) => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Başarılı',
-                    detail: 'Kaydedildi',
-                    life: 3000
-                });
-                this.findPostWithPagination();
-            },
-            error: (err) => {
-                console.log(err);
-            }
-        });
-    }
-
-    unLikePost(post: PostModel) {
-        this.service.unLikePost(post.id, Number(localStorage.getItem('userId'))).subscribe({
-            next: (data) => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Başarılı',
-                    detail: 'Kaydedildi',
-                    life: 3000
-                });
-                this.findPostWithPagination();
-            },
-            error: (err) => {
-                this.messageService.add({severity: 'error', summary: 'Error', detail: 'Message Content'});
-            }
-        });
     }
 
     routeProfile(userId: any) {
@@ -308,12 +246,12 @@ export class Post implements OnInit {
         });
     }
 
-    followUser(post: PostModel) {
+    followCommunity(item: any) {
         const followModel: FollowModel = {
             userId: Number(localStorage.getItem('userId')),
-            contentId: post.userId,
-            contentType: EnumContentType.USER
-        };
+            contentId: item.id,
+            contentType: EnumContentType.COMMUNITY
+        }
         this.followService.follow(followModel).subscribe({
             next: (data) => {
                 this.messageService.add({
@@ -330,12 +268,12 @@ export class Post implements OnInit {
         });
     }
 
-    unFollowUser(post: PostModel) {
+    unFollowCommunity(item: any) {
         const followModel: FollowModel = {
             userId: Number(localStorage.getItem('userId')),
-            contentId: post.userId,
-            contentType: EnumContentType.USER
-        };
+            contentId: item.id,
+            contentType: EnumContentType.COMMUNITY
+        }
         this.followService.unFollow(followModel).subscribe({
             next: (data) => {
                 this.messageService.add({
@@ -347,55 +285,8 @@ export class Post implements OnInit {
                 this.findPostWithPagination();
             },
             error: (err) => {
-                this.messageService.add({severity: 'error', summary: 'Error', detail: 'Message Content'});
+                console.log(err);
             }
         });
-    }
-
-    openCommentInput(post: PostModel) {
-        post.showCommentInput = !post.showCommentInput;
-    }
-
-    commentPost(post: PostModel) {
-        const commentModel: CommentModel = {
-            userId: Number(localStorage.getItem('userId')),
-            postId: post.id,
-            comment: this.comment
-        }
-        this.commentService.save(commentModel).subscribe({
-            next: (data) => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Başarılı',
-                    detail: 'Kaydedildi',
-                    life: 3000
-                });
-                this.findPostWithPagination();
-            },
-            error: (err) => {
-                this.messageService.add({severity: 'error', summary: 'Error', detail: 'Message Content'});
-            }
-        })
-    }
-
-    showComment(post: PostModel) {
-        post.showComment = !post.showComment;
-    }
-
-    deleteComment(comment: CommentModel) {
-        this.commentService.deleteById(comment.id).subscribe({
-            next: (data) => {
-                this.messageService.add({
-                    severity: 'success',
-                    summary: 'Başarılı',
-                    detail: 'Kaydedildi',
-                    life: 3000
-                });
-                this.findPostWithPagination();
-            },
-            error: (err) => {
-                this.messageService.add({severity: 'error', summary: 'Error', detail: 'Message Content'});
-            }
-        })
     }
 }

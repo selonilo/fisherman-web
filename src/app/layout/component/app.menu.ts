@@ -38,6 +38,11 @@ export class AppMenu {
                         label: 'Mera',
                         icon: 'pi pi-map',
                         routerLink: ['/pages/location']
+                    },
+                    {
+                        label: 'Topluluk',
+                        icon: 'pi pi-users',
+                        routerLink: ['/pages/community']
                     }
                 ]
             }

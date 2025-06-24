@@ -140,10 +140,6 @@ export class Location implements OnInit {
             attribution: 'MERA'
         }).addTo(this.map);
 
-        /*L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'MERA'
-        }).addTo(this.map);*/
-
         this.map.on('click', (e: L.LeafletMouseEvent) => {
             this.selectedLocation = {};
             const lat = e.latlng.lat;

@@ -1,0 +1,131 @@
+<p-toolbar *ngIf="!isProfilePage" styleClass="mb-6">
+    <ng-template #start>
+        <p-button label="Ekle" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()"/>
+    </ng-template>
+</p-toolbar>
+
+<div class="card">
+    <p-table
+        #dt
+        [value]="tableList"
+        [rows]="10"
+        [columns]="cols"
+        [paginator]="true"
+        [globalFilterFields]="['name', 'description']"
+        [tableStyle]="{ 'min-width': '75rem' }"
+        [(selection)]="selectedItem"
+        [rowHover]="true"
+        dataKey="id"
+        currentPageReportTemplate="{totalRecords} topluluğun {first} ile {last} arası gösteriliyor"
+        [showCurrentPageReport]="true"
+        [rowsPerPageOptions]="[10, 20, 30]"
+        [loading]="loading"
+    >
+        <ng-template #caption>
+            <div class="flex items-center justify-between">
+                <h5 class="m-0">Topluluklar</h5>
+                <p-iconfield>
+                    <p-inputicon styleClass="pi pi-search"/>
+                    <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."/>
+                </p-iconfield>
+            </div>
+        </ng-template>
+        <ng-template #header>
+            <tr>
+                <th pSortableColumn="name" style="min-width:16rem">
+                    Adı
+                    <p-sortIcon field="name"/>
+                </th>
+                <th pSortableColumn="description" style="min-width: 8rem">
+                    Açıklama
+                    <p-sortIcon field="description"/>
+                </th>
+                <th pSortableColumn="followedCount" style="min-width:10rem">
+                    Takipçi Sayısı
+                    <p-sortIcon field="followedCount"/>
+                </th>
+                <th style="min-width: 12rem"></th>
+            </tr>
+        </ng-template>
+        <ng-template #body let-product>
+            <tr>
+                <td>
+                    <p-chip *ngIf="product.imageUrl" [label]="product.name" class="chip-pointer"
+                            [image]="filePath + product.imageUrl" styleClass="m-0">
+                    </p-chip>
+
+                    <p-chip *ngIf="!product.imageUrl" [label]="product.name" class="chip-pointer"
+                            icon="pi pi-user" styleClass="m-0">
+                    </p-chip>
+                </td>
+                <td>{{ product.description }}</td>
+                <td>{{ product.followedCount }}</td>
+                <td>
+                    <p-button *ngIf="!product.isFollowed && userId != product.userId" icon="pi pi-user-plus"
+                              styleClass="h-full" [outlined]="true" (onClick)="followCommunity(product)"
+                              label="Takip Et">
+                    </p-button>
+
+                    <p-button *ngIf="product.isFollowed && userId != product.userId" icon="pi pi-user-minus"
+                              styleClass="h-full" [outlined]="true" (onClick)="unFollowCommunity(product)"
+                              label="Takipten Çıkar">
+                    </p-button>
+                    <p-button *ngIf="userId === product.userId" icon="pi pi-pencil" class="mr-2" [rounded]="true"
+                              [outlined]="true"
+                              (click)="edit(product)"/>
+                    <p-button *ngIf="userId === product.userId" icon="pi pi-trash" severity="danger"
+                              [rounded]="true" [outlined]="true"
+                              (click)="delete(product)"/>
+                </td>
+            </tr>
+        </ng-template>
+    </p-table>
+</div>
+
+<p-dialog [(visible)]="formDialog" [style]="{ width: '450px' }" header="Gönderi Detayı" [modal]="true" appendTo="body">
+    <ng-template #content>
+        <div class="flex flex-col gap-6">
+            <div *ngIf="!selectedItem.imageUrl" class="col-span-full lg:col-span-6">
+                <div class="card">
+                    <div class="font-semibold text-xl mb-4">Resim</div>
+                    <p-fileUpload #uploader name="file" (onSelect)="onUpload($event)" accept="image/*"
+                                  maxFileSize="1000000" chooseLabel="Dosya Seç" cancelLabel="İptal"
+                                  [showUploadButton]="false">
+                    </p-fileUpload>
+                </div>
+            </div>
+            <div class="avatar-container">
+                <p-avatar *ngIf="selectedItem.imageUrl" class="custom-avatar" [image]="filePath + selectedItem.imageUrl"
+                          size="xlarge" shape="circle"></p-avatar>
+                <p-button *ngIf="selectedItem.imageUrl" (onClick)="onDeleteImage()" label="Resmi Sil"></p-button>
+            </div>
+            <div>
+                <label for="title" class="block font-bold mb-3">Başlık</label>
+                <input type="text" pInputText id="title" [(ngModel)]="selectedItem.name" required autofocus fluid/>
+                <small class="text-red-500" *ngIf="submitted && !selectedItem.name">Boş olamaz.</small>
+            </div>
+            <div>
+                <label for="content" class="block font-bold mb-3">İçerik</label>
+                <textarea id="content" rows="5" cols="30" pTextarea [(ngModel)]="selectedItem.description" required
+                          autofocus fluid></textarea>
+                <small class="text-red-500" *ngIf="submitted && !selectedItem.description">Boş olamaz.</small>
+            </div>
+            <div>
+                <label for="title" class="block font-bold mb-3">Herkese Açık?</label>
+                <p-toggleswitch [(ngModel)]="selectedItem.isPublic"/>
+            </div>
+            <div>
+                <label for="title" class="block font-bold mb-3">Paylaşım Öncesi Onay?</label>
+                <p-toggleswitch [(ngModel)]="selectedItem.postConfirmation"/>
+            </div>
+        </div>
+    </ng-template>
+
+    <ng-template #footer>
+        <p-button label="Vazgeç" icon="pi pi-times" text (click)="hideDialog()"/>
+        <p-button label="Kaydet" icon="pi pi-check" (click)="save()"/>
+    </ng-template>
+</p-dialog>
+
+<p-confirmdialog [style]="{ width: '450px' }"/>
+<p-toast/>

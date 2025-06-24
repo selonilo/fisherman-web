@@ -5,12 +5,14 @@ import { Empty } from './empty/empty';
 import { Post } from './post/post';
 import { Profile } from './auth/profile/profile';
 import { Location } from './location/location';
+import {Community} from "./community/community";
 
 export default [
     { path: 'documentation', component: Documentation },
     { path: 'crud', component: Crud },
     { path: 'post', component: Post },
     { path: 'location', component: Location },
+    { path: 'community', component: Community },
     { path: 'profile', component: Profile },
     { path: 'empty', component: Empty },
     { path: '**', redirectTo: '/notfound' }
