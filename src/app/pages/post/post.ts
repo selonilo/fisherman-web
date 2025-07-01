@@ -1,4 +1,4 @@
-import {Component, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {ConfirmationService, MessageService} from 'primeng/api';
 import {Table, TableModule} from 'primeng/table';
 import {CommonModule} from '@angular/common';
@@ -85,6 +85,9 @@ interface ExportColumn {
 })
 export class Post implements OnInit {
     @Input() isProfilePage: boolean = false;
+    @Input() locationId?: number;
+    @Input() communityId?: number;
+    @Output() goBackEmitter: EventEmitter<any> = new EventEmitter();
     formDialog: boolean = false;
     submitted: boolean = false;
     fishTypeList = Object.keys(EnumFishType).map((key) => ({
@@ -105,8 +108,6 @@ export class Post implements OnInit {
     userId?: number;
     filePath: string = PROJECT_CONSTANTS.FILE_PATH;
     comment: string = '';
-
-    @Input() locationId?: number;
     file?: File;
 
     constructor(
@@ -139,6 +140,16 @@ export class Post implements OnInit {
             });
         } else if (this.locationId) {
             this.service.getListByLocationId(this.locationId, Number(localStorage.getItem('userId'))).subscribe({
+                next: (data) => {
+                    this.tableList = data;
+                    this.loading = false;
+                },
+                error: (err) => {
+                    console.log(err);
+                }
+            });
+        } else if (this.communityId) {
+            this.service.getListByCommunityId(this.communityId, Number(localStorage.getItem('userId'))).subscribe({
                 next: (data) => {
                     this.tableList = data;
                     this.loading = false;
@@ -226,6 +237,7 @@ export class Post implements OnInit {
                 });
             } else {
                 this.selectedItem.locationId = this.locationId;
+                this.selectedItem.communityId = this.communityId;
                 this.selectedItem.file = this.file;
                 this.service.savePost(this.selectedItem).subscribe({
                     next: (data) => {
@@ -397,5 +409,9 @@ export class Post implements OnInit {
                 this.messageService.add({severity: 'error', summary: 'Error', detail: 'Message Content'});
             }
         })
+    }
+
+    goBack() {
+        this.goBackEmitter.emit();
     }
 }

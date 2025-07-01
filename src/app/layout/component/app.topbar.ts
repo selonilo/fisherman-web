@@ -20,8 +20,8 @@ import { PROJECT_CONSTANTS } from '../../pages/constant/project.constants';
                 <i class="pi pi-bars"></i>
             </button>
             <a class="layout-topbar-logo" routerLink="/">
-                <img src="assets/logo/logo.png" alt="Logo" style="height: 40px;"/>
-                <span>KEEP IN TOUCH</span>
+                <img src="assets/logo/fishermanLogo.png" alt="Logo" style="height: 40px;"/>
+                <span>FISHERMAN</span>
             </a>
         </div>
 

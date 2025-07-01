@@ -32,7 +32,9 @@ export class PostService {
         if (post.locationId !== undefined) {
             formData.append('locationId', post.locationId.toString());
         }
-
+        if (post.communityId !== undefined) {
+            formData.append('communityId', post.communityId.toString());
+        }
         return this.http.post<PostModel>(this.apiUrl + '/save', formData);
     }
 
@@ -92,6 +94,10 @@ export class PostService {
 
     getListByLocationId(locationId: number, userId: number): Observable<PostModel[]> {
         return this.http.get<PostModel[]>(this.apiUrl + '/getListByLocationId/' + locationId + '/' + userId);
+    }
+
+    getListByCommunityId(communityId: number, userId: number): Observable<PostModel[]> {
+        return this.http.get<PostModel[]>(this.apiUrl + '/getListByCommunityId/' + communityId + '/' + userId);
     }
 
 }

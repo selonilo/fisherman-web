@@ -1,10 +1,10 @@
-<p-toolbar *ngIf="!isProfilePage" styleClass="mb-6">
+<p-toolbar *ngIf="!showPost" styleClass="mb-6">
     <ng-template #start>
         <p-button label="Ekle" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()"/>
     </ng-template>
 </p-toolbar>
 
-<div class="card">
+<div *ngIf="!showPost" class="card">
     <p-table
         #dt
         [value]="tableList"
@@ -62,24 +62,31 @@
                 <td>{{ product.followedCount }}</td>
                 <td>
                     <p-button *ngIf="!product.isFollowed && userId != product.userId" icon="pi pi-user-plus"
-                              styleClass="h-full" [outlined]="true" (onClick)="followCommunity(product)"
-                              label="Takip Et">
+                              styleClass="h-full mr-2" [outlined]="true" (onClick)="followCommunity(product)"
+                    >
                     </p-button>
 
                     <p-button *ngIf="product.isFollowed && userId != product.userId" icon="pi pi-user-minus"
-                              styleClass="h-full" [outlined]="true" (onClick)="unFollowCommunity(product)"
-                              label="Takipten Çıkar">
+                              styleClass="h-full mr-2" [outlined]="true" (onClick)="unFollowCommunity(product)"
+                    >
                     </p-button>
                     <p-button *ngIf="userId === product.userId" icon="pi pi-pencil" class="mr-2" [rounded]="true"
                               [outlined]="true"
                               (click)="edit(product)"/>
-                    <p-button *ngIf="userId === product.userId" icon="pi pi-trash" severity="danger"
+                    <p-button *ngIf="userId === product.userId" icon="pi pi-trash" severity="danger" class="mr-2"
                               [rounded]="true" [outlined]="true"
                               (click)="delete(product)"/>
+                    <p-button icon="pi pi-book"
+                              [rounded]="true" [outlined]="true"
+                              (click)="getPost(product)"/>
                 </td>
             </tr>
         </ng-template>
     </p-table>
+</div>
+
+<div *ngIf="showPost">
+    <app-post (goBackEmitter)="goBack()" [communityId]="communityId"></app-post>
 </div>
 
 <p-dialog [(visible)]="formDialog" [style]="{ width: '450px' }" header="Gönderi Detayı" [modal]="true" appendTo="body">

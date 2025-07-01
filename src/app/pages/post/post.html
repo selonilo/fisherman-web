@@ -1,8 +1,19 @@
 <p-toolbar *ngIf="!isProfilePage" styleClass="mb-6">
     <ng-template #start>
-        <p-button label="Ekle" icon="pi pi-plus" severity="secondary" class="mr-2" (onClick)="openNew()"/>
+        <p-button *ngIf="communityId"
+            icon="pi pi-arrow-left"
+            severity="secondary"
+            class="mr-2"
+            (onClick)="goBack()"/>
+        <p-button
+            label="Ekle"
+            icon="pi pi-plus"
+            severity="secondary"
+            class="mr-2"
+            (onClick)="openNew()"/>
     </ng-template>
 </p-toolbar>
+
 
 <div class="card">
     <div class="font-semibold text-xl">Gönderiler</div>

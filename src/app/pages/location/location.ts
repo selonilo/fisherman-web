@@ -1,41 +1,47 @@
-import { Component, Input, OnInit, ViewChild } from '@angular/core';
-import { ConfirmationService, MessageService } from 'primeng/api';
-import { Table, TableModule } from 'primeng/table';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { RippleModule } from 'primeng/ripple';
-import { ToastModule } from 'primeng/toast';
-import { ToolbarModule } from 'primeng/toolbar';
-import { RatingModule } from 'primeng/rating';
-import { InputTextModule } from 'primeng/inputtext';
-import { TextareaModule } from 'primeng/textarea';
-import { SelectModule } from 'primeng/select';
-import { RadioButtonModule } from 'primeng/radiobutton';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DialogModule } from 'primeng/dialog';
-import { TagModule } from 'primeng/tag';
-import { InputIconModule } from 'primeng/inputicon';
-import { IconFieldModule } from 'primeng/iconfield';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
-import { EnumPostType } from '../enum/enum.post.type';
-import { DataViewModule } from 'primeng/dataview';
-import { SelectButtonModule } from 'primeng/selectbutton';
-import { ChipModule } from 'primeng/chip';
-import { PROJECT_CONSTANTS } from '../constant/project.constants';
-import { Router } from '@angular/router';
-import { FileUploadModule } from 'primeng/fileupload';
-import { AvatarModule } from 'primeng/avatar';
-import { AccordionModule } from 'primeng/accordion';
-import { LocationService } from '../service/location.service';
-import { LocationModel } from './model/location.model';
+import {Component, Input, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
+import {ConfirmationService, MessageService} from 'primeng/api';
+import {TableModule} from 'primeng/table';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {ButtonModule} from 'primeng/button';
+import {RippleModule} from 'primeng/ripple';
+import {ToastModule} from 'primeng/toast';
+import {ToolbarModule} from 'primeng/toolbar';
+import {RatingModule} from 'primeng/rating';
+import {InputTextModule} from 'primeng/inputtext';
+import {TextareaModule} from 'primeng/textarea';
+import {SelectModule} from 'primeng/select';
+import {RadioButtonModule} from 'primeng/radiobutton';
+import {InputNumberModule} from 'primeng/inputnumber';
+import {DialogModule} from 'primeng/dialog';
+import {TagModule} from 'primeng/tag';
+import {InputIconModule} from 'primeng/inputicon';
+import {IconFieldModule} from 'primeng/iconfield';
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {EnumPostType} from '../enum/enum.post.type';
+import {DataViewModule} from 'primeng/dataview';
+import {SelectButtonModule} from 'primeng/selectbutton';
+import {ChipModule} from 'primeng/chip';
+import {PROJECT_CONSTANTS} from '../constant/project.constants';
+import {Router} from '@angular/router';
+import {FileUploadModule} from 'primeng/fileupload';
+import {AvatarModule} from 'primeng/avatar';
+import {AccordionModule} from 'primeng/accordion';
+import {LocationService} from '../service/location.service';
+import {LocationModel} from './model/location.model';
 import * as L from 'leaflet';
-import { PopoverModule } from 'primeng/popover';
-import { EnumFishType } from '../enum/enum.fish.type';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { ToggleSwitchModule } from 'primeng/toggleswitch';
-import { Post } from '../post/post';
-import { CardModule } from 'primeng/card';
+import {PopoverModule} from 'primeng/popover';
+import {EnumFishType} from '../enum/enum.fish.type';
+import {MultiSelectModule} from 'primeng/multiselect';
+import {ToggleSwitchModule} from 'primeng/toggleswitch';
+import {Post} from '../post/post';
+import {CardModule} from 'primeng/card';
+import {FavoriteService} from "../service/favorite.service";
+import {FavoriteModel} from "../common/model/favorite.model";
+import {EnumContentType} from "../enum/enum.content.type";
+import {CheckboxModule} from "primeng/checkbox";
+import {LocationQueryModel} from "./model/location-query.model";
+import {FloatLabel} from "primeng/floatlabel";
 
 interface Column {
     field: string;
@@ -81,7 +87,9 @@ interface ExportColumn {
         MultiSelectModule,
         ToggleSwitchModule,
         Post,
-        CardModule
+        CardModule,
+        CheckboxModule,
+        FloatLabel
     ],
     templateUrl: 'location.html',
     providers: [MessageService, LocationService, ConfirmationService],
@@ -91,6 +99,7 @@ export class Location implements OnInit {
     @Input() isProfilePage: boolean = false;
     formDialog: boolean = false;
     submitted: boolean = false;
+    onlyFavorite: boolean = false;
     postTypeList = Object.keys(EnumPostType).map((key) => ({
         label: EnumPostType[key as keyof typeof EnumPostType],
         value: key
@@ -106,18 +115,29 @@ export class Location implements OnInit {
         value: key
     }));
 
+    @ViewChild('popupTemplate') popupTemplateRef!: TemplateRef<any>;
+    markerMap: Map<number, L.Marker> = new Map();
+    queryModel: LocationQueryModel = {}
+
     constructor(
         private messageService: MessageService,
         private confirmationService: ConfirmationService,
         private service: LocationService,
         private router: Router,
-    ) { }
+        private viewContainerRef: ViewContainerRef,
+        private favoriteService: FavoriteService
+    ) {
+    }
 
     ngOnInit() {
         this.setMapConfig();
+        this.getAllList();
+        this.userId = Number(localStorage.getItem('userId'));
+    }
+
+    getAllList() {
         this.initMap();
         this.getList();
-        this.userId = Number(localStorage.getItem('userId'));
     }
 
     setMapConfig() {
@@ -171,7 +191,14 @@ export class Location implements OnInit {
     }
 
     getList(page: number = 0, size: number = 10) {
-        this.service.getList(Number(localStorage.getItem('userId'))).subscribe({
+        // Eski marker'ları temizle
+        this.markerMap.forEach((marker) => {
+            this.map.removeLayer(marker);
+        });
+        this.markerMap.clear();
+
+        this.queryModel.userId = Number(localStorage.getItem('userId'));
+        this.service.getListByQueryModel(this.queryModel).subscribe({
             next: (data) => {
                 data.forEach((location) => {
                     if (location.coordinate) {
@@ -179,9 +206,21 @@ export class Location implements OnInit {
                             const [lat, lng] = JSON.parse(location.coordinate);
                             const marker = L.marker([lat, lng]).addTo(this.map);
 
+                            if (location.id)
+                                this.markerMap.set(location.id, marker);
+
                             marker.on('click', () => {
                                 this.selectedLocation = location;
-                                this.formDialog = true;
+
+                                const embeddedView = this.popupTemplateRef.createEmbeddedView({location});
+                                this.viewContainerRef.insert(embeddedView);
+                                embeddedView.detectChanges();
+
+                                const container = document.createElement('div');
+                                embeddedView.rootNodes.forEach(node => container.appendChild(node));
+
+                                marker.unbindPopup();
+                                marker.bindPopup(container).openPopup();
                             });
                         } catch (e) {
                             console.error('Geçersiz coordinate:', location.coordinate);
@@ -193,38 +232,56 @@ export class Location implements OnInit {
                 console.log(err);
             }
         });
-
     }
+
 
     hideDialog() {
         this.formDialog = false;
         this.submitted = false;
     }
 
+    openDialogFromPopup(location: any) {
+        this.selectedLocation = location;
+        this.formDialog = true;
+    }
+
     delete(selectedItem: LocationModel) {
         this.confirmationService.confirm({
-            message: selectedItem.name + ' silmek istediğinize emin misiniz' + '?',
+            message: selectedItem.name + ' silmek istediğinize emin misiniz?',
             header: 'Onaylama',
             icon: 'pi pi-exclamation-triangle',
             accept: () => {
-                // this.service.deleteById(selectedItem.id).subscribe({
-                //     next: (data) => {
-                //         this.selectedItem = <PostModel>{};
-                //         this.messageService.add({
-                //             severity: 'success',
-                //             summary: 'Başarılı',
-                //             detail: 'Seçili ürün silindi',
-                //             life: 3000
-                //         });
-                //         this.findPostWithPagination();
-                //     },
-                //     error: (err) => {
-                //         console.log(err);
-                //     }
-                // });
+                if (selectedItem?.id) {
+                    this.service.deleteById(selectedItem.id).subscribe({
+                        next: () => {
+                            if (selectedItem.id) {
+                                const marker = this.markerMap.get(selectedItem.id);
+                                if (marker) {
+                                    marker.closePopup();
+                                    this.map.removeLayer(marker);
+                                    this.markerMap.delete(selectedItem.id);
+                                }
+                            }
+                            this.selectedLocation = <LocationModel>{};
+
+                            this.messageService.add({
+                                severity: 'success',
+                                summary: 'Başarılı',
+                                detail: 'Seçili ürün silindi',
+                                life: 3000
+                            });
+
+                            this.getAllList();
+                        },
+                        error: (err) => {
+                            console.log(err);
+                        }
+                    });
+                }
             }
         });
     }
+
 
     save() {
         this.submitted = true;
@@ -267,38 +324,56 @@ export class Location implements OnInit {
 
     }
 
-    likePost(location: LocationModel) {
-        // this.service.likePost(post.id, Number(localStorage.getItem('userId'))).subscribe({
-        //     next: (data) => {
-        //         this.messageService.add({
-        //             severity: 'success',
-        //             summary: 'Başarılı',
-        //             detail: 'Kaydedildi',
-        //             life: 3000
-        //         });
-        //         this.findPostWithPagination();
-        //     },
-        //     error: (err) => {
-        //         console.log(err);
-        //     }
-        // });
+    favorite(location: LocationModel) {
+        const favoriteModel: FavoriteModel = {
+            userId: Number(localStorage.getItem('userId')),
+            contentId: location.id,
+            contentType: EnumContentType.LOCATION
+        }
+        this.favoriteService.favorite(favoriteModel).subscribe({
+            next: (data) => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Başarılı',
+                    detail: 'Kaydedildi',
+                    life: 3000
+                });
+                this.getList();
+                this.selectedLocation.isFavorited = true;
+                if (this.selectedLocation.favoriteCount) {
+                    this.selectedLocation.favoriteCount++;
+                }
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        });
     }
 
-    unLikePost(location: LocationModel) {
-        // this.service.unLikePost(post.id, Number(localStorage.getItem('userId'))).subscribe({
-        //     next: (data) => {
-        //         this.messageService.add({
-        //             severity: 'success',
-        //             summary: 'Başarılı',
-        //             detail: 'Kaydedildi',
-        //             life: 3000
-        //         });
-        //         this.findPostWithPagination();
-        //     },
-        //     error: (err) => {
-        //         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Message Content' });
-        //     }
-        // });
+    unFavorite(location: LocationModel) {
+        const favoriteModel: FavoriteModel = {
+            userId: Number(localStorage.getItem('userId')),
+            contentId: location.id,
+            contentType: EnumContentType.LOCATION
+        }
+        this.favoriteService.unFavorite(favoriteModel).subscribe({
+            next: (data) => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Başarılı',
+                    detail: 'Kaydedildi',
+                    life: 3000
+                });
+                this.getList();
+                this.selectedLocation.isFavorited = false;
+                if (this.selectedLocation.favoriteCount) {
+                    this.selectedLocation.favoriteCount--;
+                }
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        });
     }
 
     checkFormDisable(): boolean {
@@ -310,6 +385,60 @@ export class Location implements OnInit {
             } else {
                 return true;
             }
+        }
+    }
+
+    approve(location: LocationModel) {
+        this.service.approve(location.id, Number(localStorage.getItem('userId'))).subscribe({
+            next: (data) => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Başarılı',
+                    detail: 'Kaydedildi',
+                    life: 3000
+                });
+                this.selectedLocation.isApproved = true;
+                if (this.selectedLocation.approveCount) {
+                    ++this.selectedLocation.approveCount;
+                }
+                this.getList();
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        });
+    }
+
+    unApprove(location: LocationModel) {
+        this.service.unApprove(location.id, Number(localStorage.getItem('userId'))).subscribe({
+            next: (data) => {
+                this.messageService.add({
+                    severity: 'success',
+                    summary: 'Başarılı',
+                    detail: 'Kaydedildi',
+                    life: 3000
+                });
+                this.selectedLocation.isApproved = false;
+                if (this.selectedLocation.approveCount) {
+                    --this.selectedLocation.approveCount;
+                }
+                this.getList();
+            },
+            error: (err) => {
+                console.log(err);
+            }
+        });
+    }
+
+    checkboxChange() {
+        this.getList();
+    }
+
+    inputChange() {
+        if (this.queryModel && this.queryModel.name && this.queryModel.name.length >= 3) {
+            this.getList();
+        } else if (this.queryModel && this.queryModel.name == "" && this.queryModel.name.length == 0) {
+            this.getList();
         }
     }
 }

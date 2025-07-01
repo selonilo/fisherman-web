@@ -12,6 +12,7 @@ export interface PostModel {
     content: string;
     userId: number;
     locationId?: number;
+    communityId?: number;
     viewNumber: number;
     likeNumber: number;
     fishType: EnumFishType;

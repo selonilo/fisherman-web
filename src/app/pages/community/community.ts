@@ -38,6 +38,7 @@ import {FollowService} from "../service/follow.service";
 import {FollowModel} from "../common/model/follow.model";
 import {EnumContentType} from "../enum/enum.content.type";
 import {PostModel} from "../post/model/post.model";
+import {Post} from "../post/post";
 
 interface Column {
     field: string;
@@ -80,7 +81,8 @@ interface ExportColumn {
         TextareaModule,
         AccordionModule,
         ProgressSpinnerModule,
-        ToggleSwitch
+        ToggleSwitch,
+        Post
     ],
     templateUrl: 'community.html',
     providers: [MessageService, Community, ConfirmationService],
@@ -95,6 +97,7 @@ export class Community implements OnInit {
     tableList: CommunityModel[] = [];
     selectedItem!: CommunityModel;
     loading: boolean = false;
+    showPost: boolean = false;
     totalRecords: number = 0;
     pageSize: number = 10;
     currentPage: number = 0;
@@ -104,6 +107,7 @@ export class Community implements OnInit {
     filePath: string = PROJECT_CONSTANTS.FILE_PATH;
     comment: string = '';
     file?: File;
+    communityId?: number;
 
     constructor(
         private messageService: MessageService,
@@ -288,5 +292,14 @@ export class Community implements OnInit {
                 console.log(err);
             }
         });
+    }
+
+    getPost(community: CommunityModel) {
+        this.communityId = community.id;
+        this.showPost = true;
+    }
+
+    goBack() {
+        this.showPost = false;
     }
 }

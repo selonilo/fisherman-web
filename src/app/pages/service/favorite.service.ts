@@ -8,7 +8,7 @@ import {FavoriteModel} from "../common/model/favorite.model";
     providedIn: 'root'
 })
 export class FavoriteService {
-    private apiUrl = PROJECT_CONSTANTS.API_URL + 'post';
+    private apiUrl = PROJECT_CONSTANTS.API_URL + 'favorite';
 
     constructor(private http: HttpClient) { }
 
