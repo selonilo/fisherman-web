@@ -441,4 +441,11 @@ export class Location implements OnInit {
             this.getList();
         }
     }
+    inputAddressChange() {
+        if (this.queryModel && this.queryModel.address && this.queryModel.address.length >= 3) {
+            this.getList();
+        } else if (this.queryModel && this.queryModel.address == "" && this.queryModel.address.length == 0) {
+            this.getList();
+        }
+    }
 }

@@ -2,8 +2,12 @@
     <ng-template #start>
         <div class="flex items-center ml-2">
             <p-floatlabel>
-                <input class="mr-2" pInputText id="over_label" [(ngModel)]="queryModel.name" autocomplete="off" (ngModelChange)="inputChange()" />
-                <label for="over_label">Mera Adı</label>
+                <input class="mr-5" pInputText id="query_name" [(ngModel)]="queryModel.name" autocomplete="off" (ngModelChange)="inputChange()" />
+                <label for="query_name">Mera Adı</label>
+            </p-floatlabel>
+            <p-floatlabel>
+                <input class="mr-5" pInputText id="query_adress" [(ngModel)]="queryModel.address" autocomplete="off" (ngModelChange)="inputAddressChange()" />
+                <label for="query_adress">Mera Adresi</label>
             </p-floatlabel>
             <p-checkbox [binary]="true" variant="filled" [(ngModel)]="queryModel.onlyFavorite" (onChange)="checkboxChange()"/>
             <label class="ml-2 mr-2"> Sadece favori meraları göster </label>

@@ -30,11 +30,6 @@ export class AppMenu {
                 routerLink: ['/pages'],
                 items: [
                     {
-                        label: 'Forum',
-                        icon: 'pi pi-book',
-                        routerLink: ['/pages/post']
-                    },
-                    {
                         label: 'Mera',
                         icon: 'pi pi-map',
                         routerLink: ['/pages/location']
@@ -43,6 +38,11 @@ export class AppMenu {
                         label: 'Topluluk',
                         icon: 'pi pi-users',
                         routerLink: ['/pages/community']
+                    },
+                    {
+                        label: 'Forum',
+                        icon: 'pi pi-book',
+                        routerLink: ['/pages/post']
                     }
                 ]
             }

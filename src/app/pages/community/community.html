@@ -89,7 +89,7 @@
     <app-post (goBackEmitter)="goBack()" [communityId]="communityId"></app-post>
 </div>
 
-<p-dialog [(visible)]="formDialog" [style]="{ width: '450px' }" header="Gönderi Detayı" [modal]="true" appendTo="body">
+<p-dialog [(visible)]="formDialog" [style]="{ width: '450px' }" header="Topluluk Detayı" [modal]="true" appendTo="body">
     <ng-template #content>
         <div class="flex flex-col gap-6">
             <div *ngIf="!selectedItem.imageUrl" class="col-span-full lg:col-span-6">
