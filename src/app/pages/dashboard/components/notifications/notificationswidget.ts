@@ -15,7 +15,6 @@ import { PROJECT_CONSTANTS } from '../../../constant/project.constants';
 })
 export class NotificationsWidget implements OnInit {
     notificationModelList: NotificationModel[] = [];
-    filePath: string = PROJECT_CONSTANTS.FILE_PATH;
 
     constructor(private authService: AuthService) {}
 

@@ -29,7 +29,6 @@ import { AvatarGroupModule } from 'primeng/avatargroup';
 })
 export class Profile implements OnInit {
 
-    filePath: string = PROJECT_CONSTANTS.FILE_PATH;
     id?: number;
     mail: string = '';
     name: string = '';

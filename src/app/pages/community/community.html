@@ -51,7 +51,7 @@
             <tr>
                 <td>
                     <p-chip *ngIf="product.imageUrl" [label]="product.name" class="chip-pointer"
-                            [image]="filePath + product.imageUrl" styleClass="m-0">
+                            [image]="product.imageUrl" styleClass="m-0">
                     </p-chip>
 
                     <p-chip *ngIf="!product.imageUrl" [label]="product.name" class="chip-pointer"
@@ -102,7 +102,7 @@
                 </div>
             </div>
             <div class="avatar-container">
-                <p-avatar *ngIf="selectedItem.imageUrl" class="custom-avatar" [image]="filePath + selectedItem.imageUrl"
+                <p-avatar *ngIf="selectedItem.imageUrl" class="custom-avatar" [image]="selectedItem.imageUrl"
                           size="xlarge" shape="circle"></p-avatar>
                 <p-button *ngIf="selectedItem.imageUrl" (onClick)="onDeleteImage()" label="Resmi Sil"></p-button>
             </div>

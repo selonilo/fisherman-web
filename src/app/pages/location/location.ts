@@ -105,7 +105,6 @@ export class Location implements OnInit {
         value: key
     }));
     userId?: number;
-    filePath: string = PROJECT_CONSTANTS.FILE_PATH;
 
     map!: L.Map;
     marker?: L.Marker;

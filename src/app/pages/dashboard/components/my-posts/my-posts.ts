@@ -27,8 +27,6 @@ export class MyPosts implements OnInit {
 
     selectedItem!: PostModel;
 
-    filePath: string = PROJECT_CONSTANTS.FILE_PATH;
-
     constructor(private postService: PostService) { }
 
     ngOnInit() {

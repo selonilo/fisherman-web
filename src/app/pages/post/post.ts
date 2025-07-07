@@ -106,7 +106,6 @@ export class Post implements OnInit {
     layout: 'list' | 'grid' = 'list';
     options = ['list', 'grid'];
     userId?: number;
-    filePath: string = PROJECT_CONSTANTS.FILE_PATH;
     comment: string = '';
     file?: File;
 

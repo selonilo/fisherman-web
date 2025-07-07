@@ -12,7 +12,7 @@
         <ng-template #body let-post>
             <tr>
                 <td style="width: 15%; min-width: 5rem;">
-                    <img *ngIf="post.imageUrl" [src]="filePath + post.imageUrl" class="shadow-lg" width="50" />
+                    <img *ngIf="post.imageUrl" [src]="post.imageUrl" class="shadow-lg" width="50" />
                     <i *ngIf="!post.imageUrl"  class="rounded w-full pi pi-image" style="font-size: 3rem"></i>
                 </td>
                 <td style="width: 35%; min-width: 7rem;">{{ post.title }}</td>

@@ -34,7 +34,7 @@
                             <div class="flex justify-center rounded p-6">
                                 <div class="relative mx-auto w-full" style="max-width: 275px; height: 275px;">
                                     <img *ngIf="item.imageUrl" class="rounded w-full h-full object-contain"
-                                         [src]="filePath + item.imageUrl"/>
+                                         [src]="item.imageUrl"/>
 
                                     <div *ngIf="!item.imageUrl"
                                          class="flex items-center justify-center w-full h-full bg-gray-100 rounded">
@@ -47,7 +47,7 @@
                             <div class="pt-12">
                                 <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;">
                                     <p-chip *ngIf="item.userImageUrl" [label]="item.name" class="chip-pointer"
-                                            [image]="filePath + item.userImageUrl" styleClass="m-0"
+                                            [image]="item.userImageUrl" styleClass="m-0"
                                             (click)="routeProfile(item.userId)">
                                     </p-chip>
 
@@ -146,7 +146,7 @@
                                                 <div class="flex items-center gap-2">
                                                     <p-chip *ngIf="comment.userModel.imageUrl"
                                                             [label]="comment.userModel.name" class="chip-pointer"
-                                                            [image]="filePath + comment.userModel.imageUrl"
+                                                            [image]="comment.userModel.imageUrl"
                                                             styleClass="m-0">
                                                     </p-chip>
                                                     <p-chip *ngIf="!comment.userModel.imageUrl"
@@ -191,7 +191,7 @@
                 </div>
             </div>
             <div class="avatar-container">
-                <p-avatar *ngIf="selectedItem.imageUrl" class="custom-avatar" [image]="filePath + selectedItem.imageUrl"
+                <p-avatar *ngIf="selectedItem.imageUrl" class="custom-avatar" [image]="selectedItem.imageUrl"
                           size="xlarge" shape="circle"></p-avatar>
                 <p-button *ngIf="selectedItem.imageUrl" (onClick)="onDeleteImage()" label="Resmi Sil"></p-button>
             </div>

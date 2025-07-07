@@ -18,7 +18,7 @@
 
                 </div>
                 <p-chip *ngIf="notification.userModel?.imageUrl" [label]="notification.userModel?.name"
-                    class="chip-pointer" [image]="filePath + notification.userModel?.imageUrl" styleClass="m-0 mr-2">
+                    class="chip-pointer" [image]="notification.userModel?.imageUrl" styleClass="m-0 mr-2">
                 </p-chip>
 
                 <p-chip *ngIf="!notification.userModel?.imageUrl" [label]="notification.userModel?.name"
