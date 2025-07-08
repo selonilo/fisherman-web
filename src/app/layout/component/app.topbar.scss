@@ -1,0 +1,53 @@
+.layout-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+    height: 56px;
+    flex-wrap: wrap; /* Taşma olursa alt satıra geç */
+    gap: 0.5rem;
+}
+
+.layout-topbar-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 1; /* Daralınca küçülebilsin */
+    min-width: 0; /* Taşma için */
+}
+
+.layout-topbar-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    white-space: nowrap; /* Yazı satır atlamasın */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Taşarsa ... göster */
+    font-weight: bold;
+    font-size: 1.125rem;
+}
+
+.layout-topbar-logo img {
+    height: 40px;
+    flex-shrink: 0;
+}
+
+.layout-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+}
+
+/* Mobilde menü butonlarını biraz küçült */
+@media (max-width: 640px) {
+    .layout-topbar-actions button,
+    .layout-topbar-actions .layout-config-menu > button {
+        padding: 0.25rem 0.5rem;
+        font-size: 1rem;
+    }
+    .layout-topbar-logo span {
+        font-size: 1rem;
+    }
+}

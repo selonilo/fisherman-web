@@ -14,53 +14,51 @@ import { PROJECT_CONSTANTS } from '../../pages/constant/project.constants';
     selector: 'app-topbar',
     standalone: true,
     imports: [RouterModule, CommonModule, StyleClassModule, AppConfigurator, MenuModule, AvatarModule],
-    template: ` <div class="layout-topbar">
-        <div class="layout-topbar-logo-container">
-            <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
-                <i class="pi pi-bars"></i>
-            </button>
-            <a class="layout-topbar-logo" routerLink="/">
-                <img src="assets/logo/fishermanLogo.png" alt="Logo" style="height: 40px;"/>
-                <span>FISHERMAN</span>
-            </a>
-        </div>
-
-        <div class="layout-topbar-actions">
-            <div class="layout-config-menu">
-                <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
-                    <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
+    template: `
+        <div class="layout-topbar">
+            <div class="layout-topbar-logo-container">
+                <button class="layout-menu-button layout-topbar-action" (click)="layoutService.onMenuToggle()">
+                    <i class="pi pi-bars"></i>
                 </button>
-                <div class="relative">
-                    <button
-                        class="layout-topbar-action layout-topbar-action-highlight"
-                        pStyleClass="@next"
-                        enterFromClass="hidden"
-                        enterActiveClass="animate-scalein"
-                        leaveToClass="hidden"
-                        leaveActiveClass="animate-fadeout"
-                        [hideOnOutsideClick]="true"
-                    >
-                        <i class="pi pi-palette"></i>
-                    </button>
-                    <app-configurator />
-                </div>
+                <a class="layout-topbar-logo" routerLink="/">
+                    <img src="assets/logo/fishermanLogo.png" alt="Logo" style="height: 40px;"/>
+                    <span>FISHERMAN</span>
+                </a>
             </div>
 
-            <button class="layout-topbar-menu-button layout-topbar-action" pStyleClass="@next" enterFromClass="hidden" enterActiveClass="animate-scalein" leaveToClass="hidden" leaveActiveClass="animate-fadeout" [hideOnOutsideClick]="true">
-                <i class="pi pi-ellipsis-v"></i>
-            </button>
-
-            <div class="layout-topbar-menu hidden lg:block">
-                <div class="layout-topbar-menu-content">
-                    <button type="button" class="layout-topbar-action" (click)="menu.toggle($event)">
-                        <i *ngIf="!imageUrl" class="pi pi-user"></i>
-                        <p-avatar *ngIf="imageUrl" [image]="imageUrl" size="normal" shape="circle"></p-avatar>
+            <div class="layout-topbar-actions">
+                <div class="layout-config-menu">
+                    <button type="button" class="layout-topbar-action" (click)="toggleDarkMode()">
+                        <i [ngClass]="{ 'pi ': true, 'pi-moon': layoutService.isDarkTheme(), 'pi-sun': !layoutService.isDarkTheme() }"></i>
                     </button>
+                    <div class="relative">
+                        <button
+                            class="layout-topbar-action layout-topbar-action-highlight"
+                            pStyleClass="@next"
+                            enterFromClass="hidden"
+                            enterActiveClass="animate-scalein"
+                            leaveToClass="hidden"
+                            leaveActiveClass="animate-fadeout"
+                            [hideOnOutsideClick]="true"
+                        >
+                            <i class="pi pi-palette"></i>
+                        </button>
+                        <app-configurator/>
+                    </div>
                 </div>
+
+                <div class="block">
+                    <div class="layout-topbar-menu-content">
+                        <button type="button" class="layout-topbar-action" (click)="menu.toggle($event)">
+                            <i *ngIf="!imageUrl" class="pi pi-user"></i>
+                            <p-avatar *ngIf="imageUrl" [image]="imageUrl" size="normal" shape="circle"></p-avatar>
+                        </button>
+                    </div>
+                </div>
+                <p-menu #menu [model]="items" [popup]="true" appendTo="body"/>
             </div>
-            <p-menu #menu [model]="items" [popup]="true" appendTo="body"/>
-        </div>
-    </div>`
+        </div>`,
+    styleUrls: ['app.topbar.scss']
 })
 export class AppTopbar implements OnInit {
     items!: MenuItem[];
