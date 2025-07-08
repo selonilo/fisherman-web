@@ -16,7 +16,7 @@
 
 
 <div class="card">
-    <div class="font-semibold text-xl">Gönderiler</div>
+    <div *ngIf="!locationId" class="font-semibold text-xl">Gönderiler</div>
     <div *ngIf="loading" class="flex justify-center items-center h-[400px]">
         <p-progressSpinner></p-progressSpinner>
     </div>

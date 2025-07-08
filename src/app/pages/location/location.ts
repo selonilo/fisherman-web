@@ -1,5 +1,5 @@
 import {Component, Input, OnInit, TemplateRef, ViewChild, ViewContainerRef} from '@angular/core';
-import {ConfirmationService, MessageService} from 'primeng/api';
+import {ConfirmationService, MenuItem, MessageService} from 'primeng/api';
 import {TableModule} from 'primeng/table';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
@@ -42,6 +42,8 @@ import {EnumContentType} from "../enum/enum.content.type";
 import {CheckboxModule} from "primeng/checkbox";
 import {LocationQueryModel} from "./model/location-query.model";
 import {FloatLabel} from "primeng/floatlabel";
+import {PanelModule} from "primeng/panel";
+import {MenuModule} from "primeng/menu";
 
 interface Column {
     field: string;
@@ -89,7 +91,9 @@ interface ExportColumn {
         Post,
         CardModule,
         CheckboxModule,
-        FloatLabel
+        FloatLabel,
+        PanelModule,
+        MenuModule
     ],
     templateUrl: 'location.html',
     providers: [MessageService, LocationService, ConfirmationService],
@@ -117,6 +121,7 @@ export class Location implements OnInit {
     @ViewChild('popupTemplate') popupTemplateRef!: TemplateRef<any>;
     markerMap: Map<number, L.Marker> = new Map();
     queryModel: LocationQueryModel = {}
+    items: MenuItem[] | undefined;
 
     constructor(
         private messageService: MessageService,
@@ -132,6 +137,25 @@ export class Location implements OnInit {
         this.setMapConfig();
         this.getAllList();
         this.userId = Number(localStorage.getItem('userId'));
+
+
+        this.items = [
+            {
+                label: 'Kaydet',
+                icon: 'pi pi-save',
+                command: () => {
+                    this.save();
+                }
+
+            },
+            {
+                label: 'Sil',
+                icon: 'pi pi-times',
+                command: () => {
+                    this.delete(this.selectedLocation);
+                }
+            }
+        ];
     }
 
     getAllList() {
@@ -440,6 +464,7 @@ export class Location implements OnInit {
             this.getList();
         }
     }
+
     inputAddressChange() {
         if (this.queryModel && this.queryModel.address && this.queryModel.address.length >= 3) {
             this.getList();

@@ -68,7 +68,7 @@
                             <label for="location"
                                    class="block text-surface-900 dark:text-surface-0 text-base font-medium mb-2">Lokasyon</label>
                             <input pInputText id="location" name="location" type="text" placeholder="Lokasyon"
-                                   class="w-full" [(ngModel)]="location" required/>
+                                   class="w-full" [(ngModel)]="location" required (keydown.enter)="register()"/>
                         </div>
 
                         <div>
