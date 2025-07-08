@@ -1,10 +1,10 @@
 <p-toolbar *ngIf="!isProfilePage" styleClass="mb-6">
     <ng-template #start>
         <p-button *ngIf="communityId"
-            icon="pi pi-arrow-left"
-            severity="secondary"
-            class="mr-2"
-            (onClick)="goBack()"/>
+                  icon="pi pi-arrow-left"
+                  severity="secondary"
+                  class="mr-2"
+                  (onClick)="goBack()"/>
         <p-button
             label="Ekle"
             icon="pi pi-plus"
@@ -22,20 +22,16 @@
     </div>
     <div *ngIf="!loading">
         <p-dataview [value]="tableList" [layout]="'grid'" emptyMessage="Kayıt Bulunamadı">
-
             <ng-template #grid let-items>
                 <div class="grid grid-cols-12 gap-4">
                     <div *ngFor="let item of items; let i = index" class="col-span-12 sm:col-span-6 lg:col-span-4 p-2">
                         <div
-                            class="p-6 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col">
-                            <span class="text-primary font-bold hover:underline">{{
-                                    item.title
-                                }}</span>
+                            class="p-6 border border-surface-200 dark:border-surface-700 bg-surface-0 dark:bg-surface-900 rounded flex flex-col dataview-card">
+                            <span class="text-primary font-bold hover:underline dataview-title">{{ item.title }}</span>
                             <div class="flex justify-center rounded p-6">
-                                <div class="relative mx-auto w-full" style="max-width: 275px; height: 275px;">
+                                <div class="relative mx-auto w-full dataview-image-container" style="max-width: 275px; height: 275px;">
                                     <img *ngIf="item.imageUrl" class="rounded w-full h-full object-contain"
                                          [src]="item.imageUrl"/>
-
                                     <div *ngIf="!item.imageUrl"
                                          class="flex items-center justify-center w-full h-full bg-gray-100 rounded">
                                         <i class="pi pi-image text-gray-400" style="font-size: 5rem;"></i>
@@ -43,9 +39,8 @@
                                 </div>
                             </div>
 
-
                             <div class="pt-12">
-                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;">
+                                <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;" class="dataview-user-actions">
                                     <p-chip *ngIf="item.userImageUrl" [label]="item.name" class="chip-pointer"
                                             [image]="item.userImageUrl" styleClass="m-0"
                                             (click)="routeProfile(item.userId)">
@@ -67,7 +62,7 @@
                                 </div>
 
                                 <div class="flex flex-row justify-between items-start gap-2 w-full flex-wrap">
-                                    <div class="min-w-0 flex-1">
+                                    <div class="min-w-0 flex-1 dataview-post-content">
                                         <span class="font-medium text-surface-500 dark:text-surface-400 text-sm">
                                             {{ item.postType }}
                                         </span>
@@ -84,20 +79,20 @@
                                                 0px 1px 2px 0px rgba(0, 0, 0, 0.04),
                                                 0px 1px 2px 0px rgba(0, 0, 0, 0.06);
                                         ">
-                                            <span class="text-sm font-medium break-words whitespace-pre-wrap">{{
-                                                    item.viewNumber
-                                                }}</span>
+                                            <span class="text-sm font-medium break-words whitespace-pre-wrap">
+                                                {{ item.viewNumber }}
+                                            </span>
                                             <i class="pi pi-eye text-yellow-500"></i>
-                                            <span class="text-sm font-medium break-words whitespace-pre-wrap">{{
-                                                    item.likeNumber
-                                                }}</span>
+                                            <span class="text-sm font-medium break-words whitespace-pre-wrap">
+                                                {{ item.likeNumber }}
+                                            </span>
                                             <i class="pi pi-heart-fill text-red-500"></i>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="flex flex-col gap-6 mt-6 mb-5">
-                                    <div class="flex gap-2">
+                                <div class="flex flex-col gap-6 mt-6 mb-5 dataview-buttons">
+                                    <div class="flex gap-2 flex-wrap">
                                         <p-button *ngIf="!item.isLiked" icon="pi pi-heart" styleClass="h-full"
                                                   [outlined]="true" (onClick)="likePost(item)"></p-button>
                                         <p-button *ngIf="item.isLiked" icon="pi pi-heart-fill" styleClass="h-full"
@@ -178,48 +173,114 @@
     </div>
 </div>
 
-<p-dialog [(visible)]="formDialog" [style]="{ width: '450px' }" header="Gönderi Detayı" [modal]="true" appendTo="body">
+
+<p-dialog
+    [(visible)]="formDialog"
+    [modal]="true"
+    appendTo="body"
+    [style]="{ width: '90vw', 'max-width': '450px' }"
+    header="Gönderi Detayı"
+>
     <ng-template #content>
-        <div class="flex flex-col gap-6">
-            <div *ngIf="!selectedItem.imageUrl" class="col-span-full lg:col-span-6">
-                <div class="card">
-                    <div class="font-semibold text-xl mb-4">Resim</div>
-                    <p-fileUpload #uploader name="file" (onSelect)="onUpload($event)" accept="image/*"
-                                  maxFileSize="1000000" chooseLabel="Dosya Seç" cancelLabel="İptal"
-                                  [showUploadButton]="false">
-                    </p-fileUpload>
-                </div>
+        <div class="flex flex-col gap-5 max-h-[75vh] overflow-auto px-1">
+            <!-- Resim Yükleme veya Avatar + Sil Butonu -->
+            <div *ngIf="!selectedItem.imageUrl">
+                <div class="font-semibold text-lg mb-2">Resim</div>
+                <p-fileUpload
+                    #uploader
+                    name="file"
+                    (onSelect)="onUpload($event)"
+                    accept="image/*"
+                    maxFileSize="1000000"
+                    chooseLabel="Dosya Seç"
+                    cancelLabel="İptal"
+                    [showUploadButton]="false"
+                    styleClass="width: 100%"
+                >
+                </p-fileUpload>
             </div>
-            <div class="avatar-container">
-                <p-avatar *ngIf="selectedItem.imageUrl" class="custom-avatar" [image]="selectedItem.imageUrl"
-                          size="xlarge" shape="circle"></p-avatar>
-                <p-button *ngIf="selectedItem.imageUrl" (onClick)="onDeleteImage()" label="Resmi Sil"></p-button>
+
+            <div class="avatar-container flex flex-col items-center gap-3" *ngIf="selectedItem.imageUrl">
+                <p-avatar
+                    class="custom-avatar"
+                    [image]="selectedItem.imageUrl"
+                    size="xlarge"
+                    shape="circle"
+                ></p-avatar>
+                <p-button label="Resmi Sil" (onClick)="onDeleteImage()"></p-button>
             </div>
+
+            <!-- Başlık -->
             <div>
                 <label for="title" class="block font-bold mb-3">Başlık</label>
-                <input type="text" pInputText id="title" [(ngModel)]="selectedItem.title" required autofocus fluid/>
-                <small class="text-red-500" *ngIf="submitted && !selectedItem.title">Boş olamaz.</small>
+                <input
+                    type="text"
+                    pInputText
+                    id="title"
+                    [(ngModel)]="selectedItem.title"
+                    required
+                    autofocus
+                    style="width: 100%"
+                />
+                <small class="text-red-500" *ngIf="submitted && !selectedItem.title"
+                >Boş olamaz.</small
+                >
             </div>
+
+            <!-- İçerik -->
             <div>
                 <label for="content" class="block font-bold mb-3">İçerik</label>
-                <textarea id="content" rows="5" cols="30" pTextarea [(ngModel)]="selectedItem.content" required
-                          autofocus fluid></textarea>
-                <small class="text-red-500" *ngIf="submitted && !selectedItem.content">Boş olamaz.</small>
+                <textarea
+                    id="content"
+                    rows="5"
+                    cols="30"
+                    pTextarea
+                    [(ngModel)]="selectedItem.content"
+                    required
+                    autofocus
+                    style="width: 100%; min-height: 100px; resize: vertical"
+                ></textarea>
+                <small class="text-red-500" *ngIf="submitted && !selectedItem.content"
+                >Boş olamaz.</small
+                >
             </div>
+
+            <!-- Balık Türü -->
             <div>
                 <label for="fishType" class="block font-bold mb-3">Balık Türü</label>
-                <p-select [(ngModel)]="selectedItem.fishType" inputId="postType" [options]="fishTypeList"
-                          placeholder="Seçiniz" appendTo="body" fluid/>
-                <small class="text-red-500" *ngIf="submitted && !selectedItem.fishType">Boş olamaz.</small>
+                <p-select
+                    [(ngModel)]="selectedItem.fishType"
+                    id="fishType"
+                    [options]="fishTypeList"
+                    placeholder="Seçiniz"
+                    appendTo="body"
+                    styleClass="width: 100%"
+                >
+                </p-select>
+                <small class="text-red-500" *ngIf="submitted && !selectedItem.fishType"
+                >Boş olamaz.</small
+                >
             </div>
         </div>
     </ng-template>
 
     <ng-template #footer>
-        <p-button label="Vazgeç" icon="pi pi-times" text (click)="hideDialog()"/>
-        <p-button label="Kaydet" icon="pi pi-check" (click)="save()"/>
+        <div class="flex justify-end gap-3">
+            <p-button label="Vazgeç" icon="pi pi-times" text (click)="hideDialog()"/>
+            <p-button label="Kaydet" icon="pi pi-check" (click)="save()"/>
+        </div>
     </ng-template>
 </p-dialog>
 
-<p-confirmdialog [style]="{ width: '450px' }"/>
+
+<p-confirmdialog
+    [style]="{ width: '90vw', 'max-width': '450px', padding: '1rem' }"
+    [acceptLabel]="'Evet'"
+    [rejectLabel]="'Hayır'"
+    [acceptIcon]="'pi pi-check'"
+    [rejectIcon]="'pi pi-times'"
+    [icon]="'pi pi-exclamation-triangle'"
+    [breakpoints]="{ '640px': '90vw', '480px': '90vw' }"
+></p-confirmdialog>
+
 <p-toast/>

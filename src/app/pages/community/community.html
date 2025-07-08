@@ -4,7 +4,7 @@
     </ng-template>
 </p-toolbar>
 
-<div *ngIf="!showPost" class="card">
+<div *ngIf="!showPost" class="card p-3 overflow-x-auto">
     <p-table
         #dt
         [value]="tableList"
@@ -12,7 +12,6 @@
         [columns]="cols"
         [paginator]="true"
         [globalFilterFields]="['name', 'description']"
-        [tableStyle]="{ 'min-width': '75rem' }"
         [(selection)]="selectedItem"
         [rowHover]="true"
         dataKey="id"
@@ -20,119 +19,224 @@
         [showCurrentPageReport]="true"
         [rowsPerPageOptions]="[10, 20, 30]"
         [loading]="loading"
+        [tableStyle]="{ width: '100%' }"
     >
         <ng-template #caption>
-            <div class="flex items-center justify-between">
-                <h5 class="m-0">Topluluklar</h5>
-                <p-iconfield>
-                    <p-inputicon styleClass="pi pi-search"/>
-                    <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."/>
-                </p-iconfield>
+            <div class="flex items-center justify-between gap-3">
+                <h5 class="m-0 text-lg font-semibold">Topluluklar</h5>
+                <div class="relative w-56">
+                    <input
+                        pInputText
+                        type="text"
+                        (input)="onGlobalFilter(dt, $event)"
+                        class="pl-10"
+                    />
+                    <i class="pi pi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500"></i>
+                </div>
             </div>
         </ng-template>
+
         <ng-template #header>
             <tr>
-                <th pSortableColumn="name" style="min-width:16rem">
+                <th pSortableColumn="name" class="px-4 py-2 min-w-[12rem] cursor-pointer">
                     Adı
                     <p-sortIcon field="name"/>
                 </th>
-                <th pSortableColumn="description" style="min-width: 8rem">
+                <th pSortableColumn="description" class="px-4 py-2 min-w-[15rem] cursor-pointer">
                     Açıklama
                     <p-sortIcon field="description"/>
                 </th>
-                <th pSortableColumn="followedCount" style="min-width:10rem">
+                <th pSortableColumn="followedCount" class="px-4 py-2 min-w-[10rem] cursor-pointer text-center">
                     Takipçi Sayısı
                     <p-sortIcon field="followedCount"/>
                 </th>
-                <th style="min-width: 12rem"></th>
+                <th class="px-4 py-2 min-w-[12rem] text-center">İşlemler</th>
             </tr>
         </ng-template>
+
         <ng-template #body let-product>
-            <tr>
-                <td>
-                    <p-chip *ngIf="product.imageUrl" [label]="product.name" class="chip-pointer"
-                            [image]="product.imageUrl" styleClass="m-0">
-                    </p-chip>
-
-                    <p-chip *ngIf="!product.imageUrl" [label]="product.name" class="chip-pointer"
-                            icon="pi pi-user" styleClass="m-0">
-                    </p-chip>
+            <tr class="hover:bg-gray-100">
+                <td class="px-4 py-3 align-middle">
+                    <p-chip
+                        *ngIf="product.imageUrl"
+                        [label]="product.name"
+                        class="chip-pointer"
+                        [image]="product.imageUrl"
+                        styleClass="m-0"
+                    ></p-chip>
+                    <p-chip
+                        *ngIf="!product.imageUrl"
+                        [label]="product.name"
+                        class="chip-pointer"
+                        icon="pi pi-user"
+                        styleClass="m-0"
+                    ></p-chip>
                 </td>
-                <td>{{ product.description }}</td>
-                <td>{{ product.followedCount }}</td>
-                <td>
-                    <p-button *ngIf="!product.isFollowed && userId != product.userId" icon="pi pi-user-plus"
-                              styleClass="h-full mr-2" [outlined]="true" (onClick)="followCommunity(product)"
-                    >
-                    </p-button>
+                <td class="px-4 py-3 align-middle break-words max-w-xs">
+                    {{ product.description }}
+                </td>
+                <td class="px-4 py-3 align-middle text-center font-semibold">
+                    {{ product.followedCount }}
+                </td>
+                <td class="px-4 py-3 align-middle text-center space-x-1 whitespace-nowrap">
+                    <p-button
+                        *ngIf="!product.isFollowed && userId !== product.userId"
+                        icon="pi pi-user-plus"
+                        styleClass="p-button-text p-button-sm"
+                        [outlined]="true"
+                        (onClick)="followCommunity(product)"
+                        aria-label="Takip Et"
+                    ></p-button>
 
-                    <p-button *ngIf="product.isFollowed && userId != product.userId" icon="pi pi-user-minus"
-                              styleClass="h-full mr-2" [outlined]="true" (onClick)="unFollowCommunity(product)"
-                    >
-                    </p-button>
-                    <p-button *ngIf="userId === product.userId" icon="pi pi-pencil" class="mr-2" [rounded]="true"
-                              [outlined]="true"
-                              (click)="edit(product)"/>
-                    <p-button *ngIf="userId === product.userId" icon="pi pi-trash" severity="danger" class="mr-2"
-                              [rounded]="true" [outlined]="true"
-                              (click)="delete(product)"/>
-                    <p-button icon="pi pi-book"
-                              [rounded]="true" [outlined]="true"
-                              (click)="getPost(product)"/>
+                    <p-button
+                        *ngIf="product.isFollowed && userId !== product.userId"
+                        icon="pi pi-user-minus"
+                        styleClass="p-button-text p-button-sm"
+                        [outlined]="true"
+                        (onClick)="unFollowCommunity(product)"
+                        aria-label="Takibi Bırak"
+                    ></p-button>
+
+                    <p-button
+                        *ngIf="userId === product.userId"
+                        icon="pi pi-pencil"
+                        styleClass="p-button-text p-button-sm"
+                        [rounded]="true"
+                        [outlined]="true"
+                        (click)="edit(product)"
+                        aria-label="Düzenle"
+                    ></p-button>
+
+                    <p-button
+                        *ngIf="userId === product.userId"
+                        icon="pi pi-trash"
+                        severity="danger"
+                        styleClass="p-button-text p-button-sm"
+                        [rounded]="true"
+                        [outlined]="true"
+                        (click)="delete(product)"
+                        aria-label="Sil"
+                    ></p-button>
+
+                    <p-button
+                        icon="pi pi-book"
+                        styleClass="p-button-text p-button-sm"
+                        [rounded]="true"
+                        [outlined]="true"
+                        (click)="getPost(product)"
+                        aria-label="Gönderileri Görüntüle"
+                    ></p-button>
                 </td>
             </tr>
         </ng-template>
     </p-table>
 </div>
 
+
 <div *ngIf="showPost">
     <app-post (goBackEmitter)="goBack()" [communityId]="communityId"></app-post>
 </div>
 
-<p-dialog [(visible)]="formDialog" [style]="{ width: '450px' }" header="Topluluk Detayı" [modal]="true" appendTo="body">
+<p-dialog
+    [(visible)]="formDialog"
+    [style]="{ width: '95vw', maxWidth: '500px', height: 'auto' }"
+    header="Topluluk Detayı"
+    [modal]="true"
+    [dismissableMask]="true"
+    appendTo="body"
+>
     <ng-template #content>
-        <div class="flex flex-col gap-6">
-            <div *ngIf="!selectedItem.imageUrl" class="col-span-full lg:col-span-6">
-                <div class="card">
-                    <div class="font-semibold text-xl mb-4">Resim</div>
-                    <p-fileUpload #uploader name="file" (onSelect)="onUpload($event)" accept="image/*"
-                                  maxFileSize="1000000" chooseLabel="Dosya Seç" cancelLabel="İptal"
-                                  [showUploadButton]="false">
-                    </p-fileUpload>
-                </div>
+        <div class="flex flex-col gap-5 max-h-[75vh] overflow-auto px-1">
+
+            <!-- Görsel Yükleme -->
+            <div *ngIf="!selectedItem.imageUrl">
+                <div class="font-semibold text-lg mb-2">Resim</div>
+                <p-fileUpload
+                    #uploader
+                    name="file"
+                    (onSelect)="onUpload($event)"
+                    accept="image/*"
+                    maxFileSize="1000000"
+                    chooseLabel="Dosya Seç"
+                    cancelLabel="İptal"
+                    [showUploadButton]="false"
+                ></p-fileUpload>
             </div>
-            <div class="avatar-container">
-                <p-avatar *ngIf="selectedItem.imageUrl" class="custom-avatar" [image]="selectedItem.imageUrl"
-                          size="xlarge" shape="circle"></p-avatar>
-                <p-button *ngIf="selectedItem.imageUrl" (onClick)="onDeleteImage()" label="Resmi Sil"></p-button>
+
+            <!-- Avatar ve Resmi Sil -->
+            <div *ngIf="selectedItem.imageUrl" class="flex flex-col items-center gap-2">
+                <p-avatar
+                    [image]="selectedItem.imageUrl"
+                    size="xlarge"
+                    shape="circle"
+                ></p-avatar>
+                <p-button
+                    label="Resmi Sil"
+                    icon="pi pi-trash"
+                    severity="danger"
+                    text
+                    (onClick)="onDeleteImage()"
+                ></p-button>
             </div>
+
+            <!-- Başlık -->
             <div>
-                <label for="title" class="block font-bold mb-3">Başlık</label>
-                <input type="text" pInputText id="title" [(ngModel)]="selectedItem.name" required autofocus fluid/>
+                <label for="title" class="block font-bold mb-2">Başlık</label>
+                <input
+                    type="text"
+                    pInputText
+                    id="title"
+                    [(ngModel)]="selectedItem.name"
+                    required
+                    fluid
+                />
                 <small class="text-red-500" *ngIf="submitted && !selectedItem.name">Boş olamaz.</small>
             </div>
+
+            <!-- İçerik -->
             <div>
-                <label for="content" class="block font-bold mb-3">İçerik</label>
-                <textarea id="content" rows="5" cols="30" pTextarea [(ngModel)]="selectedItem.description" required
-                          autofocus fluid></textarea>
+                <label for="content" class="block font-bold mb-2">İçerik</label>
+                <textarea
+                    id="content"
+                    rows="4"
+                    pTextarea
+                    [(ngModel)]="selectedItem.description"
+                    required
+                    fluid
+                ></textarea>
                 <small class="text-red-500" *ngIf="submitted && !selectedItem.description">Boş olamaz.</small>
             </div>
-            <div>
-                <label for="title" class="block font-bold mb-3">Herkese Açık?</label>
-                <p-toggleswitch [(ngModel)]="selectedItem.isPublic"/>
-            </div>
-            <div>
-                <label for="title" class="block font-bold mb-3">Paylaşım Öncesi Onay?</label>
-                <p-toggleswitch [(ngModel)]="selectedItem.postConfirmation"/>
+
+            <!-- Ayarlar -->
+            <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between">
+                    <label class="font-bold">Herkese Açık?</label>
+                    <p-toggleswitch [(ngModel)]="selectedItem.isPublic"/>
+                </div>
+                <div class="flex items-center justify-between">
+                    <label class="font-bold">Paylaşım Öncesi Onay?</label>
+                    <p-toggleswitch [(ngModel)]="selectedItem.postConfirmation"/>
+                </div>
             </div>
         </div>
     </ng-template>
 
     <ng-template #footer>
-        <p-button label="Vazgeç" icon="pi pi-times" text (click)="hideDialog()"/>
-        <p-button label="Kaydet" icon="pi pi-check" (click)="save()"/>
+        <div class="w-full flex justify-end gap-2 flex-wrap">
+            <p-button label="Vazgeç" icon="pi pi-times" text (click)="hideDialog()"/>
+            <p-button label="Kaydet" icon="pi pi-check" (click)="save()"/>
+        </div>
     </ng-template>
 </p-dialog>
 
-<p-confirmdialog [style]="{ width: '450px' }"/>
+<p-confirmdialog
+    [style]="{ width: '90vw', 'max-width': '450px', padding: '1rem' }"
+    [acceptLabel]="'Evet'"
+    [rejectLabel]="'Hayır'"
+    [acceptIcon]="'pi pi-check'"
+    [rejectIcon]="'pi pi-times'"
+    [icon]="'pi pi-exclamation-triangle'"
+    [breakpoints]="{ '640px': '90vw', '480px': '90vw' }"
+></p-confirmdialog>
+
 <p-toast/>

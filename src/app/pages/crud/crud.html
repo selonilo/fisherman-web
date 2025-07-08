@@ -149,4 +149,13 @@
     </ng-template>
 </p-dialog>
 
-<p-confirmdialog [style]="{ width: '450px' }" />
+<p-confirmdialog
+    [style]="{ width: '90vw', 'max-width': '450px', padding: '1rem' }"
+    [acceptLabel]="'Evet'"
+    [rejectLabel]="'Hayır'"
+    [acceptIcon]="'pi pi-check'"
+    [rejectIcon]="'pi pi-times'"
+    [icon]="'pi pi-exclamation-triangle'"
+    [breakpoints]="{ '640px': '90vw', '480px': '90vw' }"
+></p-confirmdialog>
+

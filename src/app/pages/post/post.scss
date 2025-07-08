@@ -16,3 +16,28 @@
     height: 150px !important;
     font-size: 3rem;
 }
+
+/* Mobil için responsive stil örneği */
+@media (max-width: 640px) {
+    .dataview-card {
+        padding: 1rem !important;
+    }
+    .dataview-image-container {
+        max-width: 180px !important;
+        height: 180px !important;
+    }
+    .dataview-title {
+        font-size: 1.1rem !important;
+    }
+    .dataview-user-actions {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+    .dataview-post-content {
+        font-size: 0.9rem !important;
+    }
+    .dataview-buttons {
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+    }
+}
