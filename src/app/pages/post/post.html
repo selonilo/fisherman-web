@@ -31,7 +31,7 @@
                             <div class="flex justify-center rounded p-6">
                                 <div class="relative mx-auto w-full dataview-image-container" style="max-width: 275px; height: 275px;">
                                     <img *ngIf="item.imageUrl" class="rounded w-full h-full object-contain"
-                                         [src]="item.imageUrl"/>
+                                         [src]="filePath + item.imageUrl"/>
                                     <div *ngIf="!item.imageUrl"
                                          class="flex items-center justify-center w-full h-full bg-gray-100 rounded">
                                         <i class="pi pi-image text-gray-400" style="font-size: 5rem;"></i>
@@ -42,7 +42,7 @@
                             <div class="pt-12">
                                 <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 2rem;" class="dataview-user-actions">
                                     <p-chip *ngIf="item.userImageUrl" [label]="item.name" class="chip-pointer"
-                                            [image]="item.userImageUrl" styleClass="m-0"
+                                            [image]="filePath + item.userImageUrl" styleClass="m-0"
                                             (click)="routeProfile(item.userId)">
                                     </p-chip>
 
@@ -141,7 +141,7 @@
                                                 <div class="flex items-center gap-2">
                                                     <p-chip *ngIf="comment.userModel.imageUrl"
                                                             [label]="comment.userModel.name" class="chip-pointer"
-                                                            [image]="comment.userModel.imageUrl"
+                                                            [image]="filePath + comment.userModel.imageUrl"
                                                             styleClass="m-0">
                                                     </p-chip>
                                                     <p-chip *ngIf="!comment.userModel.imageUrl"
@@ -203,7 +203,7 @@
             <div class="avatar-container flex flex-col items-center gap-3" *ngIf="selectedItem.imageUrl">
                 <p-avatar
                     class="custom-avatar"
-                    [image]="selectedItem.imageUrl"
+                    [image]="filePath + selectedItem.imageUrl"
                     size="xlarge"
                     shape="circle"
                 ></p-avatar>

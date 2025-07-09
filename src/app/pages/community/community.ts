@@ -107,6 +107,7 @@ export class Community implements OnInit {
     comment: string = '';
     file?: File;
     communityId?: number;
+    filePath = PROJECT_CONSTANTS.FILE_PATH;
 
     constructor(
         private messageService: MessageService,

@@ -54,6 +54,7 @@ export class Profile implements OnInit {
     followerCount: number = 0;
     followUserList: UserModel[] = [];
     followerUserList: UserModel[] = [];
+    filePath = PROJECT_CONSTANTS.FILE_PATH;
 
     constructor(
         private service: AuthService,

@@ -1,4 +1,5 @@
 export const PROJECT_CONSTANTS = {
-    API_URL: 'https://short-phones-travel.loca.lt/api/'
+    API_URL: 'https://short-phones-travel.loca.lt/api/',
+    FILE_PATH: 'https://short-phones-travel.loca.lt/fisherman/uploads'
 };
 

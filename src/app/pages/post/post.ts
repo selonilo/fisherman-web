@@ -109,6 +109,8 @@ export class Post implements OnInit {
     comment: string = '';
     file?: File;
 
+    filePath = PROJECT_CONSTANTS.FILE_PATH;
+
     constructor(
         private messageService: MessageService,
         private confirmationService: ConfirmationService,

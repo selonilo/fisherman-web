@@ -51,7 +51,7 @@ import { PROJECT_CONSTANTS } from '../../pages/constant/project.constants';
                     <div class="layout-topbar-menu-content">
                         <button type="button" class="layout-topbar-action" (click)="menu.toggle($event)">
                             <i *ngIf="!imageUrl" class="pi pi-user"></i>
-                            <p-avatar *ngIf="imageUrl" [image]="imageUrl" size="normal" shape="circle"></p-avatar>
+                            <p-avatar *ngIf="imageUrl" [image]="filePath + imageUrl" size="normal" shape="circle"></p-avatar>
                         </button>
                     </div>
                 </div>
@@ -64,6 +64,8 @@ export class AppTopbar implements OnInit {
     items!: MenuItem[];
 
     imageUrl: string = '';
+
+    filePath = PROJECT_CONSTANTS.FILE_PATH;
 
     constructor(public layoutService: LayoutService,
         private authService: AuthService,

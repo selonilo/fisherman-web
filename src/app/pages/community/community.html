@@ -61,7 +61,7 @@
                         *ngIf="product.imageUrl"
                         [label]="product.name"
                         class="chip-pointer"
-                        [image]="product.imageUrl"
+                        [image]="filePath + product.imageUrl"
                         styleClass="m-0"
                     ></p-chip>
                     <p-chip
@@ -166,7 +166,7 @@
             <!-- Avatar ve Resmi Sil -->
             <div *ngIf="selectedItem.imageUrl" class="flex flex-col items-center gap-2">
                 <p-avatar
-                    [image]="selectedItem.imageUrl"
+                    [image]="filePath + selectedItem.imageUrl"
                     size="xlarge"
                     shape="circle"
                 ></p-avatar>
