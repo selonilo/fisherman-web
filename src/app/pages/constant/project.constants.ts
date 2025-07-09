@@ -1,5 +1,5 @@
 export const PROJECT_CONSTANTS = {
-    API_URL: 'https://cold-hoops-act.loca.lt/api/',
-    FILE_PATH: 'https://cold-hoops-act.loca.lt'
+    API_URL: 'https://fisherman-apis.win/api/',
+    FILE_PATH: 'https://fisherman-apis.win'
 };
 
