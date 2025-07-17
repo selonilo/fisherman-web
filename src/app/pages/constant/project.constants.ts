@@ -1,5 +1,5 @@
 export const PROJECT_CONSTANTS = {
-    API_URL: 'https://fisherman-apis.win/api/',
-    FILE_PATH: 'https://fisherman-apis.win'
+    API_URL: 'https://homeservertest.fisheman-apis.win/api/',
+    FILE_PATH: 'https://homeservertest.fisheman-apis.win'
 };
 
